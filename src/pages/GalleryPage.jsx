@@ -22,10 +22,10 @@ export default function GalleryPage() {
   return (
     <div className="container py-5 mt-4">
       <div className="text-center mb-5 reveal in">
-        <div className="d-inline-flex p-3 rounded-circle bg-accent bg-opacity-10 text-accent mb-3 border border-accent border-opacity-20 shadow-sm">
+        <div className="d-inline-flex p-3 rounded-3 bg-white text-black mb-3 shadow-lg">
           <ImageIcon size={32} />
         </div>
-        <h1 className="display-5 text-white fw-bold mb-3 tracking-tight">Official <span className="text-accent">Gallery</span></h1>
+        <h1 className="display-5 text-white fw-bold mb-3 tracking-tight">Official Gallery</h1>
         <p className="text-muted-custom mx-auto mb-0" style={{ maxWidth: '600px', fontSize: '1.1rem' }}>
           Explore moments from our official convoys and events captured by our media team.
         </p>
@@ -33,7 +33,7 @@ export default function GalleryPage() {
 
       {loading ? (
         <div className="text-center py-5">
-          <div className="spinner-border text-accent mb-3" role="status"></div>
+          <div className="spinner-border text-white mb-3" role="status"></div>
           <p className="text-muted-custom small tracking-widest text-uppercase">Loading Gallery...</p>
         </div>
       ) : images.length > 0 ? (
@@ -56,8 +56,8 @@ export default function GalleryPage() {
         </div>
       ) : (
         <div className="text-center py-5">
-          <div className="p-5 rounded-4 d-inline-block border border-white border-opacity-10 shadow-lg" style={{ background: 'rgba(255,255,255,0.03)' }}>
-            <ImageIcon size={48} className="text-muted-custom mb-3 opacity-50" />
+          <div className="content-card p-5 d-inline-block border border-white border-opacity-10 shadow-lg">
+            <ImageIcon size={48} className="text-white mb-4 opacity-50" />
             <h4 className="text-white h5 fw-bold mb-2">Gallery is Empty</h4>
             <p className="text-muted-custom small mb-0">No images have been uploaded to the public gallery yet.</p>
           </div>

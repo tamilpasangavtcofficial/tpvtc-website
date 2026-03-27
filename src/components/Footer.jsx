@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="footer mt-auto py-4 border-top border-secondary">
+    <footer className="footer mt-auto py-4 border-top border-white border-opacity-10">
       <div className="container text-center text-md-start">
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3">
           <span className="text-muted-custom">© {new Date().getFullYear()} Tamil Pasanga VTC</span>
@@ -14,10 +14,10 @@ export default function Footer() {
               <span className="d-none d-sm-inline">tamilpasangavtcofficial@gmail.com</span>
               <span className="d-inline d-sm-none">Email Us</span>
             </a>
-            <a className="text-white text-decoration-none border-start border-secondary ps-3" href="#">Back to top</a>
+            <a className="text-white text-decoration-none border-start border-white border-opacity-10 ps-3" href="#">Back to top</a>
           </div>
         </div>
-        <div className="d-flex justify-content-center justify-content-md-start gap-4 pt-2 border-top border-secondary" style={{ opacity: 0.8, fontSize: '0.9rem' }}>
+        <div className="d-flex justify-content-center justify-content-md-start gap-4 pt-2 border-top border-white border-opacity-10" style={{ opacity: 0.8, fontSize: '0.9rem' }}>
           <Link to="/terms-of-use" className="text-muted-custom text-decoration-none">Terms of Use</Link>
           <Link to="/privacy-policy" className="text-muted-custom text-decoration-none">Privacy Policy</Link>
         </div>

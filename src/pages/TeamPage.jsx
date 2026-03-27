@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import LoadingSpinner from '../components/LoadingSpinner'
 import config from '../config'
+import logo from '../assets/logo.svg'
 
 export default function TeamPage() {
   const VTC_ID = 73933
@@ -75,27 +76,9 @@ export default function TeamPage() {
           <div className="row g-4 justify-content-center">
             {g.members.map((m) => (
               <div className="col-sm-6 col-md-4 col-lg-3" key={m.id}>
-                <div 
-                  className="member-card reveal h-100 d-flex flex-column align-items-center text-center p-4 rounded-4"
-                  style={{ 
-                    background: 'rgba(255, 255, 255, 0.03)', 
-                    backdropFilter: 'blur(16px)', 
-                    WebkitBackdropFilter: 'blur(16px)', 
-                    border: '1px solid rgba(255,255,255,0.08)', 
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-                    transition: 'transform 0.3s ease, border-color 0.3s ease'
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-5px)'
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
-                  }}
-                >
-                  <div className="member-avatar bg-white text-black d-flex justify-content-center align-items-center rounded-circle shadow mb-3" style={{ width: '70px', height: '70px', fontSize: '1.8rem', border: 'none' }}>
-                    👤
+                <div className="member-card card-with-bg reveal h-100 d-flex flex-column align-items-center text-center p-4">
+                  <div className="member-avatar mb-3" style={{ width: '70px', height: '70px' }}>
+                    <img src={logo} alt="VTC Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '10px' }} />
                   </div>
                   
                   <h3 className="h5 fw-bold text-white mb-1" style={{ wordBreak: 'break-word' }}>{m.username}</h3>
@@ -106,11 +89,11 @@ export default function TeamPage() {
                   <div className="mt-auto w-100">
                     {m.steamID && (
                       <a 
-                        className="btn btn-outline-light btn-sm w-100 rounded-pill fw-bold" 
+                        className="btn btn-outline-accent btn-sm w-100 rounded-pill fw-bold" 
                         href={`https://truckersmp.com/user/${m.user_id}`} 
                         target="_blank" 
                         rel="noreferrer"
-                        style={{ padding: '0.4rem 0', borderColor: 'rgba(255,255,255,0.2)' }}
+                        style={{ padding: '0.4rem 0' }}
                       >
                         TruckersMP Profile
                       </a>

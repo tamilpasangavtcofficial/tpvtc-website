@@ -2,12 +2,12 @@ import React from 'react';
 
 export default function PrivacyPolicy() {
   const headerStyle = { 
-    color: '#e65c00', 
+    color: '#fff', 
     borderBottom: '1px solid rgba(255,255,255,0.08)', 
     paddingBottom: '0.75rem', 
     marginBottom: '1.25rem' 
   };
-  const listDotStyle = { '--accent': '#e65c00' };
+  const listDotStyle = { '--accent': '#fff' };
 
   return (
     <div className="section-modern py-5" style={{ minHeight: '80vh' }}>

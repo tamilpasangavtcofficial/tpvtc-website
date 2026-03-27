@@ -60,7 +60,7 @@ export default function EventDetailPage() {
   const handleBookingSubmit = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch('${config.API_BASE_URL}/api/slots/book', {
+      const res = await fetch(`${config.API_BASE_URL}/api/slots/book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -140,14 +140,14 @@ export default function EventDetailPage() {
               <h1 className="h2 text-white fw-bold mb-0 tracking-tight">{event.name}</h1>
             </div>
 
-            <div className="rounded-5 overflow-hidden mb-4 shadow-2xl border border-white border-opacity-10 position-relative group">
+            <div className="rounded-4 overflow-hidden mb-4 shadow-2xl border border-white border-opacity-10 position-relative group">
               <img src={event.banner} className="w-100 d-block transition-all hover:scale-105" alt={event.name} style={{ maxHeight: 400, objectFit: 'cover' }} />
-              <div className="position-absolute bottom-0 start-0 w-100 p-4 bg-gradient-to-t from-black to-transparent"></div>
+              <div className="position-absolute bottom-0 start-0 w-100 p-4" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }}></div>
             </div>
 
             {/* Structured Event Info Block (TMP Style) */}
-            <div className="p-4 rounded-4 border border-white border-opacity-5 mb-4 shadow-sm" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <div className="row g-4 text-uppercase tracking-widest x-small fw-bold opacity-75 mb-3 text-accent">
+            <div className="p-4 rounded-4 border border-white border-opacity-5 mb-4 shadow-sm" style={{ background: 'rgba(255,255,255,0.01)' }}>
+              <div className="row g-4 text-uppercase tracking-widest x-small fw-bold opacity-75 mb-3 text-white">
                 <div className="col-12"><Info size={14} className="me-2" /> Official Event Logistics</div>
               </div>
               <div className="row g-4">
@@ -179,10 +179,10 @@ export default function EventDetailPage() {
             {event.map && (
               <div className="mt-4 pt-4 border-top border-white border-opacity-5">
                 <h3 className="h5 text-white fw-bold mb-3 d-flex align-items-center gap-3">
-                  <div className="p-2 rounded-3 bg-accent bg-opacity-10 text-accent"><MapPin size={20} /></div>
+                  <div className="p-2 rounded-3 bg-white text-black"><MapPin size={20} /></div>
                   Event Route Map
                 </h3>
-                <img src={event.map} className="img-fluid rounded-5 shadow-2xl border border-white border-opacity-5 hover:border-opacity-20 transition-all" alt="Map" />
+                <img src={event.map} className="img-fluid rounded-4 shadow-2xl border border-white border-opacity-5 hover:border-opacity-20 transition-all" alt="Map" />
               </div>
             )}
           </div>
@@ -191,14 +191,14 @@ export default function EventDetailPage() {
         <div className="col-lg-4">
           <div className="reveal delay-1 sticky-top" style={{ top: '120px' }}>
             {/* Schedule Card */}
-            <div className="content-card p-4 border-white border-opacity-5 shadow-2xl" style={{ background: 'rgba(15,20,30,0.4)', backdropFilter: 'blur(20px)' }}>
+            <div className="content-card p-4 shadow-2xl" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
               <h4 className="h6 text-muted-custom mb-4 fw-bold tracking-widest text-uppercase d-flex align-items-center gap-2">
-                <Calendar size={16} className="text-accent" /> Event Schedule
+                <Calendar size={16} className="text-white" /> Event Schedule
               </h4>
               <div className="d-flex flex-column gap-4">
                 <div className="d-flex gap-3">
-                  <div className="rounded-4 bg-accent bg-opacity-10 text-accent d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                    <Clock size={24} />
+                  <div className="rounded-3 bg-white text-black d-flex align-items-center justify-content-center" style={{ width: 44, height: 44 }}>
+                    <Clock size={22} />
                   </div>
                   <div>
                     <div className="x-small text-muted-custom fw-bold tracking-widest text-uppercase mb-1 opacity-75">Meetup</div>
@@ -206,8 +206,8 @@ export default function EventDetailPage() {
                   </div>
                 </div>
                 <div className="d-flex gap-3">
-                  <div className="rounded-4 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                    <Zap size={24} />
+                  <div className="rounded-3 bg-white text-black d-flex align-items-center justify-content-center" style={{ width: 44, height: 44 }}>
+                    <Zap size={22} />
                   </div>
                   <div>
                     <div className="x-small text-muted-custom fw-bold tracking-widest text-uppercase mb-1 opacity-75">Departure</div>
@@ -218,12 +218,12 @@ export default function EventDetailPage() {
             </div>
 
             {isOurEvent && (
-              <div className="content-card p-4 mt-4 border-accent border-opacity-30 overflow-hidden position-relative" style={{ background: 'rgba(102, 252, 241, 0.04)' }}>
-                <div className="position-absolute top-0 end-0 p-3 opacity-10 pe-none" style={{ zIndex: 0 }}><Ticket size={80} strokeWidth={1} /></div>
+              <div className="content-card event-card-custom p-4 mt-4 overflow-hidden position-relative">
+                <div className="position-absolute top-0 end-0 p-3 opacity-05 pe-none" style={{ zIndex: 0 }}><Ticket size={80} strokeWidth={1} /></div>
                 <div className="position-relative" style={{ zIndex: 1 }}>
-                  <h4 className="h5 text-accent mb-2 fw-bold d-flex align-items-center gap-2"><Ticket size={20} /> Slot Reservation</h4>
+                  <h4 className="h5 text-white mb-2 fw-bold d-flex align-items-center gap-2"><Ticket size={20} /> Slot Reservation</h4>
                   <p className="small text-muted-custom mb-4 opacity-75">Request an official parking spot for your VTC fleet.</p>
-                  <Link to={`/events/${id}/book`} className="btn btn-accent w-100 py-3 fw-bold tracking-wider rounded-4 d-flex align-items-center justify-content-center gap-2 shadow-lg">
+                  <Link to={`/events/${id}/book`} className="btn btn-accent w-100 py-3 fw-bold tracking-wider rounded-pill d-flex align-items-center justify-content-center gap-2 shadow-lg">
                     RESERVE NOW <ChevronRight size={18} />
                   </Link>
                 </div>
@@ -243,7 +243,7 @@ export default function EventDetailPage() {
                         <div className="x-small text-muted-custom fw-bold mb-1 opacity-50">SLOT NO.</div>
                         <div className="text-white fw-bold h4 mb-0">#{attendingSlot.slot_number}</div>
                       </div>
-                      <div className="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-3 py-1 rounded-pill x-small fw-bold">ALLOCATED</div>
+                      <div className="badge bg-white text-black px-3 py-1 rounded-pill x-small fw-bold">ALLOCATED</div>
                     </div>
                     {attendingSlot.slot_url && (
                       <div className="rounded-4 border border-white border-opacity-10 overflow-hidden shadow-2xl group cursor-pointer position-relative">

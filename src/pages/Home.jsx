@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import config from '../config'
 import img1 from '../assets/gallery/gallery1.PNG'
 import img2 from '../assets/gallery/gallery2.PNG'
@@ -10,6 +10,7 @@ export default function Home() {
   const fallbackImages = [img1, img2, img3, img4, img5]
   const [images, setImages] = useState(fallbackImages)
   const [vtc, setVtc] = useState(null)
+  const [supporters, setSupporters] = useState([])
   
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll('.reveal'))
@@ -17,10 +18,11 @@ export default function Home() {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('in')
-          io.unobserve(entry.target)
+        } else {
+          entry.target.classList.remove('in')
         }
       })
-    }, { threshold: 0.15 })
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' })
     elements.forEach((el) => io.observe(el))
     return () => io.disconnect()
   }, [])
@@ -54,8 +56,18 @@ export default function Home() {
         console.error('Error loading header images:', err)
       }
     }
+    const loadSupporters = async () => {
+      try {
+        const response = await fetch(`${config.API_BASE_URL}/api/supporters`)
+        const data = await response.json()
+        setSupporters(Array.isArray(data) ? data : [])
+      } catch (err) {
+        console.error('Error loading supporters:', err)
+      }
+    }
     load()
     loadHeaders()
+    loadSupporters()
   }, [])
 
   return (
@@ -75,16 +87,41 @@ export default function Home() {
                 <div className="hero-overlay" />
               </div>
               <div className="hero-center">
-                <h1 className="display-4 fw-bold mb-3 text-white" style={{ letterSpacing: '1px' }}>Welcome to TAMIL PASANGA VTC</h1>
-                <p className="mb-5 lead text-white mx-auto" style={{ maxWidth: '800px', opacity: '0.9' }}>
+                <h1 className="display-4 fw-bold mb-3 text-white reveal hero-animate-title" style={{ letterSpacing: '1px' }}>WELCOME TO TAMIL PASANGA VTC</h1>
+                <p className="mb-5 lead text-white mx-auto reveal hero-animate-text" style={{ maxWidth: '800px', opacity: '0.9' }}>
                   Tamil Pasanga VTC is a friendly and active Virtual Trucking Company built by Tamil gamers and truck enthusiasts who love driving together on TruckersMP. Our goal is to create a fun, realistic, and respectful community.
                 </p>
                 <div className="d-flex flex-wrap gap-4 justify-content-center align-items-center">
-                  <a href="https://truckersmp.com/vtc/73933/recruitment-form/3515-driver-recruitment-form" target="_blank" rel="noreferrer" className="btn btn-accent btn-lg fw-bold px-5 py-3 rounded-pill" style={{ letterSpacing: '0.5px' }}>Apply Now</a>
-                  <a href="https://discord.com/invite/FtYBxZxTBF" target="_blank" className="btn btn-outline-accent btn-lg fw-bold px-5 py-3 rounded-pill" rel="noreferrer" style={{ letterSpacing: '0.5px' }}>Join Discord</a>
+                  <a href="https://truckersmp.com/vtc/73933/recruitment-form/3515-driver-recruitment-form" target="_blank" rel="noreferrer" className="btn btn-accent btn-lg fw-bold px-5 py-3 rounded-pill reveal hero-animate-btn hero-delay-1" style={{ letterSpacing: '0.5px' }}>Apply Now</a>
+                  <a href="https://discord.com/invite/FtYBxZxTBF" target="_blank" className="btn btn-outline-accent btn-lg fw-bold px-5 py-3 rounded-pill reveal hero-animate-btn hero-delay-2" rel="noreferrer" style={{ letterSpacing: '0.5px' }}>Join Discord</a>
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* News Ticker Marquee: Supporters */}
+      <div className="news-ticker-container">
+        <div className="news-ticker-content">
+          {[...Array(3)].map((_, i) => (
+            <React.Fragment key={i}>
+              <span className="news-ticker-item fw-bold" style={{ color: '#fff' }}>OUR SUPPORTERS</span>
+              <span className="ticker-sep">✶</span>
+              {supporters.length > 0 ? (
+                supporters.map((s, idx) => (
+                  <React.Fragment key={`${i}-${idx}`}>
+                    <span className="news-ticker-item">{s.name}</span>
+                    <span className="ticker-sep">✶</span>
+                  </React.Fragment>
+                ))
+              ) : (
+                <>
+                  <span className="news-ticker-item">Loading Patrons...</span>
+                  <span className="ticker-sep">✶</span>
+                </>
+              )}
+            </React.Fragment>
           ))}
         </div>
       </div>
@@ -121,19 +158,19 @@ export default function Home() {
             <div className="col-12 reveal delay-2">
               <ul className="feature-grid text-muted-custom">
                 <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-circle shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>1</span>
+                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>1</span>
                   <span className="fw-bold text-white ms-2">Professional Driving Standards</span>
                 </li>
                 <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-circle shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>2</span>
+                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>2</span>
                   <span className="fw-bold text-white ms-2">Exceptional Team Spirit</span>
                 </li>
                 <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-circle shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>3</span>
+                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>3</span>
                   <span className="fw-bold text-white ms-2">Proud Culture & Global Vibes</span>
                 </li>
                 <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-circle shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>4</span>
+                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>4</span>
                   <span className="fw-bold text-white ms-2">Premium Convoys & High-End Events</span>
                 </li>
               </ul>
@@ -179,7 +216,7 @@ export default function Home() {
           <div className="row g-4">
             <div className="col-md-6 col-lg-4">
               <div className="offer-card h-100 reveal p-4">
-                <div className="offer-icon bg-white text-black rounded-circle shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🚚</div>
+                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🚚</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Regular Convoys</h3>
                   <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>Drive in massive weekly and monthly organized convoys soaring across Europe & ProMods.</p>
@@ -188,7 +225,7 @@ export default function Home() {
             </div>
             <div className="col-md-6 col-lg-4">
               <div className="offer-card h-100 reveal delay-1 p-4">
-                <div className="offer-icon bg-white text-black rounded-circle shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🤝</div>
+                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🤝</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Friendly Community</h3>
                   <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>Integrate seamlessly into a vibrant family-like atmosphere where members are always actively helping each other.</p>
@@ -197,7 +234,7 @@ export default function Home() {
             </div>
             <div className="col-md-6 col-lg-4">
               <div className="offer-card h-100 reveal delay-2 p-4">
-                <div className="offer-icon bg-white text-black rounded-circle shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🛡️</div>
+                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🛡️</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Professional Standard</h3>
                   <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>We enforce deep realistic driving rules to ensure our reputation remains absolutely pristine on TruckersMP.</p>
@@ -207,7 +244,7 @@ export default function Home() {
             
             <div className="col-md-6 col-lg-4 offset-lg-2">
               <div className="offer-card h-100 reveal p-4">
-                <div className="offer-icon bg-white text-black rounded-circle shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🏁</div>
+                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🏁</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Cultural Unity</h3>
                   <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>We heavily represent Tamil pride, ethics, and unbreakable brotherhood to players traveling globally alongside us.</p>
@@ -216,7 +253,7 @@ export default function Home() {
             </div>
             <div className="col-md-6 col-lg-4">
               <div className="offer-card h-100 reveal p-4">
-                <div className="offer-icon bg-white text-black rounded-circle shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>📅</div>
+                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>📅</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Exclusive Partnerships</h3>
                   <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>Gain coveted access to heavily organized international VTC collaborations, huge cross-server events, and more.</p>

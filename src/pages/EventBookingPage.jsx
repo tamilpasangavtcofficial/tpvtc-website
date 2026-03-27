@@ -111,10 +111,10 @@ export default function EventBookingPage() {
             </div>
          </div>
 
-         <div className="info-alert mb-5 p-4 rounded-4 border border-accent border-opacity-10" style={{ background: 'rgba(102, 252, 241, 0.03)' }}>
+         <div className="info-alert mb-5 p-4 rounded-4 border border-white border-opacity-10" style={{ background: 'rgba(255, 255, 255, 0.01)' }}>
             <div className="d-flex align-items-center justify-content-between flex-wrap gap-4">
                <div className="d-flex align-items-start gap-3">
-                  <AlertCircle className="text-accent mt-1" size={20} />
+                  <AlertCircle className="text-white mt-1" size={20} />
                   <div>
                      <div className="text-white fw-bold mb-1 h6">Tamil Pasanga Booking Engine</div>
                      <div className="small text-muted-custom">Select a parking zone and request a slot. All requests are processed within 24 hours by our event team.</div>
@@ -122,15 +122,15 @@ export default function EventBookingPage() {
                </div>
                <div className="d-flex gap-4">
                   <div className="d-flex align-items-center gap-2">
-                     <div className="rounded-circle border border-white" style={{ width: 12, height: 12 }}></div>
+                     <div className="rounded-1 border border-white" style={{ width: 12, height: 12 }}></div>
                      <span className="x-small text-muted-custom fw-bold tracking-widest text-uppercase">Available</span>
                   </div>
                   <div className="d-flex align-items-center gap-2">
-                     <div className="rounded-circle" style={{ width: 12, height: 12, background: '#ffc107' }}></div>
+                     <div className="rounded-1" style={{ width: 12, height: 12, background: '#ffc107' }}></div>
                      <span className="x-small text-muted-custom fw-bold tracking-widest text-uppercase" style={{ color: '#ffc107' }}>Pending</span>
                   </div>
                   <div className="d-flex align-items-center gap-2">
-                     <div className="rounded-circle" style={{ width: 12, height: 12, background: '#ff4d4d' }}></div>
+                     <div className="rounded-1" style={{ width: 12, height: 12, background: '#ff4d4d' }}></div>
                      <span className="x-small text-muted-custom fw-bold tracking-widest text-uppercase" style={{ color: '#ff4d4d' }}>Reserved</span>
                   </div>
                </div>
@@ -160,14 +160,14 @@ export default function EventBookingPage() {
                            </div>
                            <div className="p-4 flex-grow-1">
                               <div className="d-flex justify-content-between align-items-center mb-3">
-                                 <div>
+                                  <div>
                                     <div className="x-small text-muted-custom fw-bold tracking-widest text-uppercase d-flex align-items-center gap-2 mb-1">
-                                       <MapPin size={12} className="text-accent" /> Parking Zone
+                                       <MapPin size={12} className="text-white" /> Parking Zone
                                     </div>
                                     <h5 className="text-white fw-bold mb-0">{groupSlots[0]?.EventSlotImage?.slot_name || `ZONE ${String.fromCharCode(65 + gIdx)}`}</h5>
                                  </div>
                                  <div className="text-end">
-                                    <span className="badge bg-accent bg-opacity-10 text-accent border border-accent border-opacity-20 px-3 py-2 rounded-pill small fw-bold">{avail} / {total} AVAILABLE</span>
+                                    <span className="badge bg-white text-black px-3 py-2 rounded-pill small fw-bold">{avail} / {total} AVAILABLE</span>
                                  </div>
                               </div>
 
@@ -217,9 +217,9 @@ export default function EventBookingPage() {
                               </div>
 
                               {avail > 0 ? (
-                                 <button
+                                  <button
                                     onClick={() => setBookingGroup(groupSlots)}
-                                    className="btn btn-accent w-100 py-3 rounded-4 fw-bold small mt-auto"
+                                    className="btn btn-accent w-100 py-3 rounded-pill fw-bold small mt-auto"
                                  >
                                     REQUEST SLOT
                                  </button>
@@ -309,19 +309,18 @@ export default function EventBookingPage() {
                               />
                            </div>
                         </div>
-
-                        <div className="d-flex gap-3 mt-5">
-                           <button type="button" onClick={() => setBookingGroup(null)} className="btn btn-outline-secondary px-4 py-3 rounded-4 fw-bold small tracking-widest border-white border-opacity-10 hover:bg-white hover:bg-opacity-5 transition-all text-uppercase">
-                              CANCEL
-                           </button>
-                           <button type="submit" disabled={submitting} className="btn btn-admin flex-grow-1 py-3 rounded-4 shadow-lg h6 fw-bold tracking-wider mb-0 text-uppercase d-flex align-items-center justify-content-center gap-3">
-                              {submitting ? <Loader2 size={20} className="animate-spin mx-auto" /> : (
-                                 <>
-                                    <Check size={18} /> TRANSMIT BOOKING REQUEST
-                                 </>
-                              )}
-                           </button>
-                        </div>
+                         <div className="d-flex gap-3 mt-5">
+                            <button type="button" onClick={() => setBookingGroup(null)} className="btn btn-outline-white px-4 py-3 rounded-pill fw-bold small tracking-widest border-white border-opacity-10 hover:bg-white hover:bg-opacity-5 transition-all text-uppercase">
+                               CANCEL
+                            </button>
+                            <button type="submit" disabled={submitting} className="btn btn-accent flex-grow-1 py-3 rounded-pill shadow-lg h6 fw-bold tracking-wider mb-0 text-uppercase d-flex align-items-center justify-content-center gap-3">
+                               {submitting ? <Loader2 size={20} className="animate-spin mx-auto" /> : (
+                                  <>
+                                     <Check size={18} /> TRANSMIT BOOKING REQUEST
+                                  </>
+                               )}
+                            </button>
+                         </div>
                      </form>
                   </div>
                </div>
@@ -332,21 +331,20 @@ export default function EventBookingPage() {
          {/* Premium Status Modal */}
          {statusModal.show && createPortal(
             <div className="modal-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-4"
-               style={{ background: 'rgba(3,5,9,0.92)', backdropFilter: 'blur(12px)', zIndex: 99999 }}>
-               <div className="content-card p-0 border-0 shadow-2xl reveal zoom in w-100 overflow-hidden" style={{ maxWidth: 450, background: '#111' }}>
-                  <div className="p-5 text-center">
-                     <div className={`rounded-circle mx-auto d-flex align-items-center justify-content-center mb-4 border-2 border ${statusModal.type === 'error' ? 'text-danger border-danger' : 'text-accent border-accent'}`}
-                        style={{ width: 64, height: 64, background: 'rgba(255,255,255,0.03)' }}>
-                        {statusModal.type === 'error' ? <LucideX size={32} /> : <Check size={32} />}
-                     </div>
-                     <h4 className="fw-bold text-white mb-2">{statusModal.title}</h4>
-                     <p className="text-muted-custom small mb-4">{statusModal.message}</p>
-
-                     <div className="d-flex justify-content-center pt-2">
-                        <button onClick={() => setStatusModal({ ...statusModal, show: false })} className="btn btn-accent px-5 py-2 rounded-4 mx-auto fw-bold">UNDERSTOOD</button>
-                     </div>
-                  </div>
-               </div>
+               style={{ background: 'rgba(3,5,9,0.92)', backdropFilter: 'blur(12px)', zIndex: 99999 }}>                <div className="content-card p-0 border-0 shadow-2xl reveal zoom in w-100 overflow-hidden" style={{ maxWidth: 450, background: '#000' }}>
+                   <div className="p-5 text-center">
+                      <div className={`rounded-3 mx-auto d-flex align-items-center justify-content-center mb-4 border-2 border ${statusModal.type === 'error' ? 'text-danger border-danger' : 'text-white border-white'}`}
+                         style={{ width: 64, height: 64, background: 'rgba(255,255,255,0.03)' }}>
+                         {statusModal.type === 'error' ? <LucideX size={32} /> : <Check size={32} />}
+                      </div>
+                      <h4 className="fw-bold text-white mb-2">{statusModal.title}</h4>
+                      <p className="text-muted-custom small mb-4">{statusModal.message}</p>
+ 
+                      <div className="d-flex justify-content-center pt-2">
+                         <button onClick={() => setStatusModal({ ...statusModal, show: false })} className="btn btn-accent px-5 py-2 rounded-pill mx-auto fw-bold">UNDERSTOOD</button>
+                      </div>
+                   </div>
+                </div>
             </div>,
             document.body
          )}
