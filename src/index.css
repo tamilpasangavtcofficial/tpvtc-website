@@ -796,44 +796,6 @@ body:not(.offcanvas-open) { overflow: auto; }
 .stat-pill .label { color: var(--muted); font-size: .8rem; }
 .stat-pill .value { font-weight: 600; }
 
-/* Floating Mail Button */
-.floating-mail-btn {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 60px;
-  height: 60px;
-  background-color: var(--accent);
-  color: #000;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 8px 24px var(--accent-glow);
-  z-index: 1050;
-  transition: var(--transition-main);
-  text-decoration: none;
-}
-.floating-mail-btn svg {
-  transition: transform 0.3s ease;
-}
-.floating-mail-btn:hover {
-  transform: translateY(-5px) scale(1.1);
-  box-shadow: 0 12px 32px rgba(255, 255, 255, 0.4);
-  color: #000;
-  background-color: #fff;
-}
-.floating-mail-btn:hover svg {
-  transform: scale(1.1);
-}
-@media (max-width: 768px) {
-  .floating-mail-btn {
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 50px;
-    height: 50px;
-  }
-}
 
 /* News Ticker Marquee */
 .news-ticker-container {
@@ -945,7 +907,7 @@ body, a, button, [role="button"], input, select, textarea {
   left: 0;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  z-index: 10000;
+  z-index: 1000000; /* Ensure it's above all modals (even those at 99999) */
   pointer-events: none;
   transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
   will-change: transform;
