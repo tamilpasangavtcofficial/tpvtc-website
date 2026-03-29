@@ -155,8 +155,8 @@ export default function EventBookingPage() {
                   return (
                      <div key={gIdx} className="col-lg-4">
                         <div className="content-card p-0 overflow-hidden border-0 shadow-xl group h-100 d-flex flex-column">
-                           <div className="bg-dark p-2 border-bottom border-white border-opacity-5" style={{ height: 180 }}>
-                              <img src={url} className="w-100 h-100 object-fit-cover rounded-2 transition-all hover:scale-105" alt="Parking Floor" />
+                           <div className="bg-dark p-2 border-bottom border-white border-opacity-5" style={{ height: 350 }}>
+                              <img src={url} className="w-100 h-100 object-fit-contain rounded-2 transition-all hover:scale-105" alt="Parking Floor" />
                            </div>
                            <div className="p-4 flex-grow-1">
                               <div className="d-flex justify-content-between align-items-center mb-3">
