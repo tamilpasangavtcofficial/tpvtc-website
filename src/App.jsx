@@ -20,12 +20,12 @@ const Placeholder = ({ title }) => (
   </div>
 )
 
-import CustomCursor from './components/CustomCursor'
+
 
 export default function App() {
   return (
     <div>
-      <CustomCursor />
+
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
