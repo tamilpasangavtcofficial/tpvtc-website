@@ -5,6 +5,9 @@ import img2 from '../assets/gallery/gallery2.PNG'
 import img3 from '../assets/gallery/gallery3.PNG'
 import img4 from '../assets/gallery/gallery4.png'
 import img5 from '../assets/gallery/gallery5.PNG'
+import { Trophy, Medal, Crown, TrendingUp } from 'lucide-react'
+import logo from '../assets/logo.svg'
+import trophyImg from '../assets/trophy.png'
 
 export default function Home() {
   const fallbackImages = [img1, img2, img3, img4, img5]
@@ -126,12 +129,79 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Monthly Achievements Section */}
+      <section className="py-5 border-top section-modern achievements-section" style={{ borderColor: 'rgba(255,255,255,0.08) !important' }}>
+        <div className="container py-4">
+          <div className="d-flex align-items-center mb-5 reveal">
+            <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>RECOGNITION</span>
+            <h2 className="h3 fw-bold mb-0 text-white">Monthly Achievements</h2>
+          </div>
+
+          <div className="row g-4">
+            {/* Giveaway Winner */}
+            <div className="col-lg-5">
+              <div className="content-card achievement-card winner-card h-100 p-5 in overflow-hidden position-relative">
+                {/* Logo Overlay */}
+                <img src={logo} alt="" className="position-absolute start-50 top-50 translate-middle" style={{ width: '120%', opacity: '0.05', pointerEvents: 'none', filter: 'grayscale(1)' }} />
+                
+                <div className="winner-badge mb-4 position-relative z-1">
+                  <div className="logo-container d-flex align-items-center justify-content-center">
+                    <img src={trophyImg} alt="Trophy" className="achievement-trophy" style={{ width: '150px', height: '150px', objectFit: 'contain', filter: 'drop-shadow(0 0 25px rgba(255,215,0,0.5))' }} />
+                  </div>
+                </div>
+                <div className="text-center position-relative z-1">
+                  <h3 className="h4 fw-bold text-white mb-2">Giveaway Winner</h3>
+                  <p className="text-muted-custom mb-5 small text-uppercase" style={{ letterSpacing: '2px' }}>Public Convoy • April 2024</p>
+                  
+                  <div className="winner-info p-4 rounded-4 bg-white text-black shadow-lg mx-auto" style={{ maxWidth: '300px' }}>
+                    <Crown className="mb-2" size={24} />
+                    <div className="h3 fw-black mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>MR. GIDEON</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Top Performers */}
+            <div className="col-lg-7">
+              <div className="content-card achievement-card h-100 p-5 in">
+                <div className="d-flex align-items-center mb-5">
+                  <TrendingUp className="text-white me-3" size={28} />
+                  <h3 className="h4 fw-bold text-white mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>Top 3 Performers</h3>
+                </div>
+                
+                <div className="performer-list">
+                  {[
+                    { name: "Suresh", km: "12,450", rank: 1, color: "#FFD700" },
+                    { name: "Dinesh", km: "11,200", rank: 2, color: "#C0C0C0" },
+                    { name: "Ramesh", km: "10,800", rank: 3, color: "#CD7F32" }
+                  ].map((p, i) => (
+                    <div key={i} className="performer-item d-flex align-items-center p-3 mb-3 rounded-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div className="rank-icon me-4 d-flex align-items-center justify-content-center" style={{ color: p.color }}>
+                        <Medal size={32} />
+                      </div>
+                      <div className="flex-grow-1">
+                        <div className="fw-bold text-white h5 mb-0">{p.name}</div>
+                        <div className="text-muted-custom small text-uppercase" style={{ fontSize: '10px', letterSpacing: '1px' }}>VTC Driver</div>
+                      </div>
+                      <div className="text-end">
+                        <div className="fw-black text-white h4 mb-0">{p.km}</div>
+                        <div className="text-muted-custom fw-bold" style={{ fontSize: '9px', letterSpacing: '1.5px', opacity: '0.6' }}>KM DRIVEN</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Editorial Identity Section */}
       <section className="py-5 border-top section-modern" style={{ borderColor: 'rgba(255,255,255,0.08) !important' }}>
         <div className="container py-4">
           <div className="row g-4 align-items-stretch">
             <div className="col-lg-6">
-              <div className="content-card reveal h-100 p-5 text-start">
+              <div className="content-card h-100 p-5 text-start">
                 <div className="d-flex align-items-center mb-4">
                   <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>IDENTITY</span>
                   <h2 className="h4 fw-bold mb-0 text-white">Who We Are</h2>
@@ -142,7 +212,7 @@ export default function Home() {
               </div>
             </div>
             <div className="col-lg-6">
-              <div className="content-card reveal delay-1 h-100 p-5 text-start">
+              <div className="content-card h-100 p-5 text-start">
                 <div className="d-flex align-items-center mb-4">
                   <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>MISSION</span>
                   <h2 className="h4 fw-bold mb-0 text-white">Our Directive</h2>
@@ -155,7 +225,7 @@ export default function Home() {
           </div>
           
           <div className="row mt-5 pt-3">
-            <div className="col-12 reveal delay-2">
+            <div className="col-12">
               <ul className="feature-grid text-muted-custom">
                 <li className="feature-box py-3 px-4">
                   <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>1</span>
@@ -183,7 +253,7 @@ export default function Home() {
       {vtc && (
         <section className="py-5 border-top bg-black" style={{ borderColor: 'rgba(255,255,255,0.08) !important' }}>
           <div className="container py-4">
-            <div className="row g-4 text-center reveal">
+            <div className="row g-4 text-center">
               <div className="col-6 col-md-3">
                 <div className="display-4 fw-bolder text-white mb-2">{vtc.members_count}</div>
                 <div className="small text-muted-custom text-uppercase fw-bold" style={{ letterSpacing: '1.5px', opacity: '0.8' }}>Active Drivers</div>
@@ -215,7 +285,7 @@ export default function Home() {
           
           <div className="row g-4">
             <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 reveal p-4">
+              <div className="offer-card h-100 p-4">
                 <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🚚</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Regular Convoys</h3>
@@ -224,7 +294,7 @@ export default function Home() {
               </div>
             </div>
             <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 reveal delay-1 p-4">
+              <div className="offer-card h-100 p-4">
                 <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🤝</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Friendly Community</h3>
@@ -233,7 +303,7 @@ export default function Home() {
               </div>
             </div>
             <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 reveal delay-2 p-4">
+              <div className="offer-card h-100 p-4">
                 <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🛡️</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Professional Standard</h3>
@@ -243,7 +313,7 @@ export default function Home() {
             </div>
             
             <div className="col-md-6 col-lg-4 offset-lg-2">
-              <div className="offer-card h-100 reveal p-4">
+              <div className="offer-card h-100 p-4">
                 <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🏁</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Cultural Unity</h3>
@@ -252,7 +322,7 @@ export default function Home() {
               </div>
             </div>
             <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 reveal p-4">
+              <div className="offer-card h-100 p-4">
                 <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>📅</div>
                 <div className="pt-2">
                   <h3 className="h5 fw-bold text-white mb-3">Exclusive Partnerships</h3>

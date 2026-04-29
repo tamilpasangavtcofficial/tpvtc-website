@@ -716,7 +716,7 @@ body:not(.offcanvas-open) { overflow: auto; }
 .feature-list li:hover { transform: translateX(2px); }
 
 /* Reveal on scroll */
-.reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+.reveal { opacity: 1; transform: translateY(0); transition: opacity .6s ease, transform .6s ease; }
 .reveal.in { opacity: 1; transform: translateY(0); }
 .reveal.delay-1 { transition-delay: .1s; }
 .reveal.delay-2 { transition-delay: .2s; }
@@ -797,7 +797,54 @@ body:not(.offcanvas-open) { overflow: auto; }
 .stat-pill .value { font-weight: 600; }
 
 
-/* News Ticker Marquee */
+/* Achievement Section Specifics */
+.winner-card {
+  background: radial-gradient(circle at top right, rgba(255,215,0,0.05), transparent 60%), var(--card-bg) !important;
+  transition: all 0.5s ease;
+}
+
+.winner-card .position-absolute {
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.winner-card:hover {
+  border-color: rgba(255, 215, 0, 0.3) !important;
+  box-shadow: 0 20px 60px rgba(255, 215, 0, 0.1) !important;
+}
+
+.winner-card:hover .position-absolute {
+  transform: translate(-50%, -50%) scale(1.1) rotate(5deg) !important;
+  opacity: 0.08 !important;
+}
+
+.winner-info {
+  transition: var(--transition-spring);
+  border: 1px solid transparent;
+}
+
+.winner-card:hover .winner-info {
+  transform: scale(1.05);
+  box-shadow: 0 15px 40px rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.5);
+}
+
+.performer-item {
+  transition: var(--transition-main);
+}
+
+.performer-item:hover {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  transform: translateX(8px);
+}
+
+.rank-icon {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.fw-black {
+  font-weight: 900;
+}
 .news-ticker-container {
   width: 100%;
   overflow: hidden;
@@ -855,7 +902,7 @@ body:not(.offcanvas-open) { overflow: auto; }
 .hero-animate-title,
 .hero-animate-text,
 .hero-animate-btn {
-  opacity: 0;
+  opacity: 1;
 }
 
 .in .hero-animate-title {
