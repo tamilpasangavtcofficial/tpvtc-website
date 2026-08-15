@@ -126,16 +126,8 @@ export default function Home() {
         }
 
         const data = await response.json()
-        if (data && data.winner_name) {
+        if (data && data.p1_name) {
           setAchievements(data)
-          // Fetch event details if ID exists
-          if (data.winner_event_id) {
-            const evRes = await fetch(`${config.API_BASE_URL}/api/tmp/events/${data.winner_event_id}`)
-            const evData = await evRes.json()
-            if (!evData.error && evData.response) {
-              setEventData(evData.response)
-            }
-          }
         }
       } catch (err) {
         console.error('Error loading achievements:', err)
@@ -221,46 +213,8 @@ export default function Home() {
             </div>
           ) : achievements ? (
             <div className="row g-4">
-              {/* Giveaway Winner */}
-              <div className="col-lg-5">
-                <div className="content-card achievement-card winner-card h-100 p-5 in overflow-hidden position-relative">
-                  {/* Logo Overlay */}
-                  <img src={logo} alt="" className="position-absolute start-50 top-50 translate-middle" style={{ width: '120%', opacity: '0.05', pointerEvents: 'none', filter: 'grayscale(1)' }} />
-                  
-                  <div className="winner-badge mb-4 position-relative z-1">
-                    <div className="logo-container d-flex align-items-center justify-content-center">
-                      <img src={trophyImg} alt="Trophy" className="achievement-trophy" style={{ width: '150px', height: '150px', objectFit: 'contain', filter: 'drop-shadow(0 0 25px rgba(255,215,0,0.5))' }} />
-                    </div>
-                  </div>
-                  <div className="text-center position-relative z-1">
-                    <h3 className="h4 fw-bold text-white mb-2">Giveaway Winner</h3>
-                    <p className="text-muted-custom mb-3 small text-uppercase" style={{ letterSpacing: '2px' }}>
-                      {eventData ? eventData.name : 'VTC EVENT'} • {achievements.month || 'THIS MONTH'}
-                    </p>
-                    
-                    {achievements.winner_dlc && (
-                      <div className="mb-4">
-                        <span className="badge rounded-pill bg-warning text-dark px-3 py-2 fw-bold small">
-                          PRIZE: {achievements.winner_dlc}
-                        </span>
-                      </div>
-                    )}
-                    
-                    <div className="winner-info p-4 rounded-4 bg-white text-black shadow-lg mx-auto" style={{ maxWidth: '300px' }}>
-                      <Crown className="mb-2" size={24} />
-                      <div className="h3 fw-black mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>
-                        {achievements.winner_name || 'PENDING'}
-                      </div>
-                      <div className="small fw-bold text-muted-custom text-uppercase mt-1" style={{ fontSize: '10px' }}>
-                        {achievements.winner_role || 'DRIVERS TEAM'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Top Performers */}
-              <div className="col-lg-7">
+              <div className="col-12">
                 <div className="content-card achievement-card h-100 p-5 in">
                   <div className="d-flex align-items-center mb-5">
                     <TrendingUp className="text-white me-3" size={28} />
@@ -275,21 +229,24 @@ export default function Home() {
                         name: achievements.p2_name || "TBA", 
                         km: achievements.p2_distance || "0", 
                         role: achievements.p2_role || "VTC Driver",
-                        color: "#C0C0C0" 
+                        color: "#C0C0C0",
+                        dlc: achievements.p2_dlc 
                       },
                       { 
                         rank: 1, 
                         name: achievements.p1_name || "TBA", 
                         km: achievements.p1_distance || "0", 
                         role: achievements.p1_role || "VTC Driver",
-                        color: "#FFD700" 
+                        color: "#FFD700",
+                        dlc: achievements.p1_dlc 
                       },
                       { 
                         rank: 3, 
                         name: achievements.p3_name || "TBA", 
                         km: achievements.p3_distance || "0", 
                         role: achievements.p3_role || "VTC Driver",
-                        color: "#CD7F32" 
+                        color: "#CD7F32",
+                        dlc: achievements.p3_dlc 
                       }
                     ].map((p, i) => (
                       <div key={i} className={`podium-item podium-item--${p.rank}`}>
@@ -300,6 +257,13 @@ export default function Home() {
                           <div className="podium-rank-num">{p.rank}</div>
                           <div className="podium-info">
                             <div className="podium-name">{p.name}</div>
+                            {p.dlc && (
+                              <div className="mt-1 mb-1">
+                                <span className="badge bg-warning text-dark px-2 py-1 fw-bold" style={{ fontSize: '10px' }}>
+                                  PRIZE: {p.dlc}
+                                </span>
+                              </div>
+                            )}
                             <div className="podium-role">{p.role}</div>
                             <div className="podium-distance mt-2">{p.km}</div>
                             <div className="text-muted-custom fw-bold" style={{ fontSize: '8px', letterSpacing: '1px' }}>KM DRIVEN</div>
