@@ -49,6 +49,7 @@ export default function Navbar() {
             <li className="nav-item"><NavLink className="nav-link text-white" to="/events/attending">Our Attending Events</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link text-white" to="/team">Our Team</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link text-white" to="/supporters">Our Supporters</NavLink></li>
+            <li className="nav-item"><NavLink className="nav-link text-white" to="/partners">Our Partners</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link text-white" to="/gallery">Gallery</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link text-white" to="/about">About</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link text-white" to="/contact">Contact</NavLink></li>
@@ -88,6 +89,7 @@ export default function Navbar() {
           <li className="nav-item"><NavLink onClick={hideOffcanvas} className="nav-link text-white" to="/events/attending">Our Attending Events</NavLink></li>
           <li className="nav-item"><NavLink onClick={hideOffcanvas} className="nav-link text-white" to="/team">Our Team</NavLink></li>
           <li className="nav-item"><NavLink onClick={hideOffcanvas} className="nav-link text-white" to="/supporters">Our Supporters</NavLink></li>
+          <li className="nav-item"><NavLink onClick={hideOffcanvas} className="nav-link text-white" to="/partners">Our Partners</NavLink></li>
           <li className="nav-item"><NavLink onClick={hideOffcanvas} className="nav-link text-white" to="/gallery">Gallery</NavLink></li>
           <li className="nav-item"><NavLink onClick={hideOffcanvas} className="nav-link text-white" to="/about">About</NavLink></li>
           <li className="nav-item"><NavLink onClick={hideOffcanvas} className="nav-link text-white" to="/contact">Contact</NavLink></li>

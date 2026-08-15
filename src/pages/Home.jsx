@@ -53,6 +53,7 @@ export default function Home() {
   const [vtc, setVtc] = useState(null)
   const [supporters, setSupporters] = useState([])
   const [achievements, setAchievements] = useState(null)
+  const [isAchievementsLoading, setIsAchievementsLoading] = useState(true)
   const [eventData, setEventData] = useState(null)
   
   useEffect(() => {
@@ -103,7 +104,12 @@ export default function Home() {
       try {
         const response = await fetch(`${config.API_BASE_URL}/api/supporters`)
         const data = await response.json()
-        setSupporters(Array.isArray(data) ? data : [])
+        if (Array.isArray(data)) {
+          const uniqueData = data.filter((v, i, a) => a.findIndex(t => (t.name === v.name)) === i)
+          setSupporters(uniqueData)
+        } else {
+          setSupporters([])
+        }
       } catch (err) {
         console.error('Error loading supporters:', err)
       }
@@ -115,6 +121,7 @@ export default function Home() {
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
            console.warn("Home.jsx: Achievements API did not return JSON");
+           setIsAchievementsLoading(false);
            return;
         }
 
@@ -132,6 +139,8 @@ export default function Home() {
         }
       } catch (err) {
         console.error('Error loading achievements:', err)
+      } finally {
+        setIsAchievementsLoading(false)
       }
     }
     load()
@@ -204,97 +213,109 @@ export default function Home() {
             <h2 className="h3 fw-bold mb-0 text-white">Monthly Achievements</h2>
           </div>
 
-          <div className="row g-4">
-            {/* Giveaway Winner */}
-            <div className="col-lg-5">
-              <div className="content-card achievement-card winner-card h-100 p-5 in overflow-hidden position-relative">
-                {/* Logo Overlay */}
-                <img src={logo} alt="" className="position-absolute start-50 top-50 translate-middle" style={{ width: '120%', opacity: '0.05', pointerEvents: 'none', filter: 'grayscale(1)' }} />
-                
-                <div className="winner-badge mb-4 position-relative z-1">
-                  <div className="logo-container d-flex align-items-center justify-content-center">
-                    <img src={trophyImg} alt="Trophy" className="achievement-trophy" style={{ width: '150px', height: '150px', objectFit: 'contain', filter: 'drop-shadow(0 0 25px rgba(255,215,0,0.5))' }} />
+          {isAchievementsLoading ? (
+            <div className="d-flex justify-content-center align-items-center py-5">
+              <div className="spinner-border text-light" role="status" style={{ width: '3rem', height: '3rem' }}>
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : achievements ? (
+            <div className="row g-4">
+              {/* Giveaway Winner */}
+              <div className="col-lg-5">
+                <div className="content-card achievement-card winner-card h-100 p-5 in overflow-hidden position-relative">
+                  {/* Logo Overlay */}
+                  <img src={logo} alt="" className="position-absolute start-50 top-50 translate-middle" style={{ width: '120%', opacity: '0.05', pointerEvents: 'none', filter: 'grayscale(1)' }} />
+                  
+                  <div className="winner-badge mb-4 position-relative z-1">
+                    <div className="logo-container d-flex align-items-center justify-content-center">
+                      <img src={trophyImg} alt="Trophy" className="achievement-trophy" style={{ width: '150px', height: '150px', objectFit: 'contain', filter: 'drop-shadow(0 0 25px rgba(255,215,0,0.5))' }} />
+                    </div>
                   </div>
-                </div>
-                <div className="text-center position-relative z-1">
-                  <h3 className="h4 fw-bold text-white mb-2">Giveaway Winner</h3>
-                  <p className="text-muted-custom mb-3 small text-uppercase" style={{ letterSpacing: '2px' }}>
-                    {eventData ? eventData.name : 'VTC EVENT'} • {achievements?.month || 'THIS MONTH'}
-                  </p>
-                  
-                  {achievements?.winner_dlc && (
-                    <div className="mb-4">
-                      <span className="badge rounded-pill bg-warning text-dark px-3 py-2 fw-bold small">
-                        PRIZE: {achievements.winner_dlc}
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="winner-info p-4 rounded-4 bg-white text-black shadow-lg mx-auto" style={{ maxWidth: '300px' }}>
-                    <Crown className="mb-2" size={24} />
-                    <div className="h3 fw-black mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>
-                      {achievements?.winner_name || 'PENDING'}
-                    </div>
-                    <div className="small fw-bold text-muted-custom text-uppercase mt-1" style={{ fontSize: '10px' }}>
-                      {achievements?.winner_role || 'DRIVERS TEAM'}
+                  <div className="text-center position-relative z-1">
+                    <h3 className="h4 fw-bold text-white mb-2">Giveaway Winner</h3>
+                    <p className="text-muted-custom mb-3 small text-uppercase" style={{ letterSpacing: '2px' }}>
+                      {eventData ? eventData.name : 'VTC EVENT'} • {achievements.month || 'THIS MONTH'}
+                    </p>
+                    
+                    {achievements.winner_dlc && (
+                      <div className="mb-4">
+                        <span className="badge rounded-pill bg-warning text-dark px-3 py-2 fw-bold small">
+                          PRIZE: {achievements.winner_dlc}
+                        </span>
+                      </div>
+                    )}
+                    
+                    <div className="winner-info p-4 rounded-4 bg-white text-black shadow-lg mx-auto" style={{ maxWidth: '300px' }}>
+                      <Crown className="mb-2" size={24} />
+                      <div className="h3 fw-black mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>
+                        {achievements.winner_name || 'PENDING'}
+                      </div>
+                      <div className="small fw-bold text-muted-custom text-uppercase mt-1" style={{ fontSize: '10px' }}>
+                        {achievements.winner_role || 'DRIVERS TEAM'}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Top Performers */}
-            <div className="col-lg-7">
-              <div className="content-card achievement-card h-100 p-5 in">
-                <div className="d-flex align-items-center mb-5">
-                  <TrendingUp className="text-white me-3" size={28} />
-                  <h3 className="h4 fw-bold text-white mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>Top 3 Performers</h3>
-                </div>
-                
-                <div className="podium-container">
-                  {[
-                    // Order: 2nd, 1st, 3rd
-                    { 
-                      rank: 2, 
-                      name: achievements?.p2_name || "Dinesh", 
-                      km: achievements?.p2_distance || "11,200", 
-                      role: achievements?.p2_role || "VTC Driver",
-                      color: "#C0C0C0" 
-                    },
-                    { 
-                      rank: 1, 
-                      name: achievements?.p1_name || "Suresh", 
-                      km: achievements?.p1_distance || "12,450", 
-                      role: achievements?.p1_role || "VTC Driver",
-                      color: "#FFD700" 
-                    },
-                    { 
-                      rank: 3, 
-                      name: achievements?.p3_name || "Ramesh", 
-                      km: achievements?.p3_distance || "10,800", 
-                      role: achievements?.p3_role || "VTC Driver",
-                      color: "#CD7F32" 
-                    }
-                  ].map((p, i) => (
-                    <div key={i} className={`podium-item podium-item--${p.rank}`}>
-                      <div className="podium-avatar-wrap">
-                        <MedalBadge rank={p.rank} color={p.color} />
-                      </div>
-                      <div className="podium-rank-box" style={{ marginTop: '0' }}>
-                        <div className="podium-rank-num">{p.rank}</div>
-                        <div className="podium-info">
-                          <div className="podium-name">{p.name}</div>
-                          <div className="podium-role">{p.role}</div>
-                          <div className="podium-distance mt-2">{p.km}</div>
-                          <div className="text-muted-custom fw-bold" style={{ fontSize: '8px', letterSpacing: '1px' }}>KM DRIVEN</div>
+              {/* Top Performers */}
+              <div className="col-lg-7">
+                <div className="content-card achievement-card h-100 p-5 in">
+                  <div className="d-flex align-items-center mb-5">
+                    <TrendingUp className="text-white me-3" size={28} />
+                    <h3 className="h4 fw-bold text-white mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>Top 3 Performers</h3>
+                  </div>
+                  
+                  <div className="podium-container">
+                    {[
+                      // Order: 2nd, 1st, 3rd
+                      { 
+                        rank: 2, 
+                        name: achievements.p2_name || "TBA", 
+                        km: achievements.p2_distance || "0", 
+                        role: achievements.p2_role || "VTC Driver",
+                        color: "#C0C0C0" 
+                      },
+                      { 
+                        rank: 1, 
+                        name: achievements.p1_name || "TBA", 
+                        km: achievements.p1_distance || "0", 
+                        role: achievements.p1_role || "VTC Driver",
+                        color: "#FFD700" 
+                      },
+                      { 
+                        rank: 3, 
+                        name: achievements.p3_name || "TBA", 
+                        km: achievements.p3_distance || "0", 
+                        role: achievements.p3_role || "VTC Driver",
+                        color: "#CD7F32" 
+                      }
+                    ].map((p, i) => (
+                      <div key={i} className={`podium-item podium-item--${p.rank}`}>
+                        <div className="podium-avatar-wrap">
+                          <MedalBadge rank={p.rank} color={p.color} />
+                        </div>
+                        <div className="podium-rank-box" style={{ marginTop: '0' }}>
+                          <div className="podium-rank-num">{p.rank}</div>
+                          <div className="podium-info">
+                            <div className="podium-name">{p.name}</div>
+                            <div className="podium-role">{p.role}</div>
+                            <div className="podium-distance mt-2">{p.km}</div>
+                            <div className="text-muted-custom fw-bold" style={{ fontSize: '8px', letterSpacing: '1px' }}>KM DRIVEN</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-5">
+              <p className="text-muted-custom mb-0">Achievements will be updated soon.</p>
+            </div>
+          )}
         </div>
       </section>
 

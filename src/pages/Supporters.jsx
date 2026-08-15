@@ -12,7 +12,12 @@ export default function Supporters() {
             try {
                 const res = await fetch(`${config.API_BASE_URL}/api/supporters`);
                 const data = await res.json();
-                setSupporters(Array.isArray(data) ? data : []);
+                if (Array.isArray(data)) {
+                    const uniqueData = data.filter((v, i, a) => a.findIndex(t => (t.name === v.name)) === i);
+                    setSupporters(uniqueData);
+                } else {
+                    setSupporters([]);
+                }
             } catch (e) {
                 console.error('Failed to fetch supporters:', e);
             } finally {

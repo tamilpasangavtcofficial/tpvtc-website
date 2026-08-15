@@ -12,6 +12,7 @@ import TermsOfUse from './pages/TermsOfUse'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import GalleryPage from './pages/GalleryPage'
 import Supporters from './pages/Supporters'
+import Partners from './pages/Partners'
 
 const Placeholder = ({ title }) => (
   <div className="container py-5">
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/team" element={<TeamPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/supporters" element={<Supporters />} />
+        <Route path="/partners" element={<Partners />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/terms-of-use" element={<TermsOfUse />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
