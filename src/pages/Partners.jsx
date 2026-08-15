@@ -109,9 +109,11 @@ export default function Partners() {
                                                     <span className="badge bg-white text-black fw-bold px-3 py-1 shadow-sm">{p.partner_type}</span>
                                                 </div>
                                             </div>
-                                            <a href={p.vtc_link} target="_blank" rel="noreferrer" className="btn btn-outline-accent d-flex align-items-center justify-content-center transition-all hover-scale" style={{ width: '48px', height: '48px', borderRadius: '50%' }}>
-                                                <ExternalLink size={20} />
-                                            </a>
+                                            {p.vtc_link && (
+                                                <a href={p.vtc_link} target="_blank" rel="noreferrer" className="btn btn-outline-accent d-flex align-items-center justify-content-center transition-all hover-scale" style={{ width: '48px', height: '48px', borderRadius: '50%' }}>
+                                                    <ExternalLink size={20} />
+                                                </a>
+                                            )}
                                         </div>
                                         
                                         <div className="text-muted-custom mb-0" style={{ whiteSpace: 'pre-line', lineHeight: '1.8' }}>
