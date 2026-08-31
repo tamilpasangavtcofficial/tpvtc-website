@@ -143,9 +143,12 @@ export default function EventBookingPage() {
                <div className="col-12 text-center py-5 opacity-50 text-muted-custom h5">No parking records found for this event.</div>
             ) : Object.entries(groups)
                .sort((a, b) => {
-                  const minA = Math.min(...a[1].map(s => parseInt(s.slot_no) || 999));
-                  const minB = Math.min(...b[1].map(s => parseInt(s.slot_no) || 999));
-                  return minA - minB;
+                  const getWeight = (g) => {
+                     // Custom named slots get top priority (-1)
+                     if (g.some(s => isNaN(parseInt(s.slot_no)))) return -1;
+                     return Math.min(...g.map(s => parseInt(s.slot_no) || 999));
+                  };
+                  return getWeight(a[1]) - getWeight(b[1]);
                })
                .map(([url, groupSlots], gIdx) => {
                   const booked = groupSlots.filter(s => s.booked_by).length
