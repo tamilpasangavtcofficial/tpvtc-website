@@ -173,7 +173,12 @@ export default function EventBookingPage() {
 
                               <div className="mb-4">
                                  <div className="d-flex flex-wrap gap-2">
-                                    {groupSlots.sort((a, b) => parseInt(a.slot_no) - parseInt(b.slot_no)).map(s => {
+                                    {groupSlots.sort((a, b) => {
+                                       const numA = parseInt(a.slot_no);
+                                       const numB = parseInt(b.slot_no);
+                                       if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                                       return String(a.slot_no).localeCompare(String(b.slot_no));
+                                    }).map(s => {
                                        const isReserved = !!s.booked_by;
                                        const isPending = !isReserved && s.BookingRequests?.length > 0;
 
@@ -184,7 +189,7 @@ export default function EventBookingPage() {
                                        return (
                                           <div key={s.id} className={`p-1 px-3 rounded-2 x-small fw-600 border ${style}`}
                                              style={isReserved ? { backgroundColor: '#ff4d4d', color: '#fff' } : isPending ? { border: '1px solid #ffc107', color: '#ffc107' } : {}}>
-                                             #{s.slot_no}
+                                             {!isNaN(parseInt(s.slot_no)) && "#"}{s.slot_no}
                                           </div>
                                        )
                                     })}
@@ -201,14 +206,18 @@ export default function EventBookingPage() {
                                        {/* Confirmed Bookings */}
                                        {groupSlots.filter(s => s.booked_by).map(s => (
                                           <div key={s.id} className="d-flex justify-content-between align-items-center">
-                                             <div className="small text-white fw-500 text-truncate pe-3">#{s.slot_no} {s.booked_by}</div>
+                                             <div className="small text-white fw-500 text-truncate pe-3">
+                                                {!isNaN(parseInt(s.slot_no)) ? `#${s.slot_no} ${s.booked_by}` : s.slot_no}
+                                             </div>
                                              <span className="badge x-small px-2 py-1 rounded-pill" style={{ background: '#ff4d4d', color: '#fff' }}>RESERVED</span>
                                           </div>
                                        ))}
                                        {/* Pending Bookings */}
                                        {groupSlots.filter(s => !s.booked_by && s.BookingRequests && s.BookingRequests.length > 0).map(s => (
                                           <div key={s.id} className="d-flex justify-content-between align-items-center border-top border-white border-opacity-5 pt-2 mt-1">
-                                             <div className="small text-warning fw-500 text-truncate pe-3">#{s.slot_no} {s.BookingRequests[0].vtc_name} {s.BookingRequests.length > 1 ? `+${s.BookingRequests.length - 1} more` : ''}</div>
+                                             <div className="small text-warning fw-500 text-truncate pe-3">
+                                                {!isNaN(parseInt(s.slot_no)) && "#"}{s.slot_no} {s.BookingRequests[0].vtc_name} {s.BookingRequests.length > 1 ? `+${s.BookingRequests.length - 1} more` : ''}
+                                             </div>
                                              <span className="badge x-small px-2 py-1 rounded-pill" style={{ background: 'rgba(255, 193, 7, 0.1)', color: '#ffc107', border: '1px solid #ffc107' }}>PENDING</span>
                                           </div>
                                        ))}
