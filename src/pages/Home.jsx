@@ -202,7 +202,12 @@ export default function Home() {
         <div className="container py-4">
           <div className="d-flex align-items-center mb-5 reveal">
             <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>RECOGNITION</span>
-            <h2 className="h3 fw-bold mb-0 text-white">Monthly Achievements</h2>
+            <h2 className="h3 fw-bold mb-0 text-white">
+              Monthly Achievements
+              {achievements?.month && (
+                <span className="text-muted-custom fs-5 fw-normal ms-2">— {achievements.month}</span>
+              )}
+            </h2>
           </div>
 
           {isAchievementsLoading ? (

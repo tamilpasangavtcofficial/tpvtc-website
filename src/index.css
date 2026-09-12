@@ -272,14 +272,11 @@ body:not(.offcanvas-open) { overflow: auto; }
   height: 100%;
   object-fit: cover;
   filter: brightness(0.8) contrast(1.25);
-  transform: scale(1.05);
-  transition: transform 8s ease;
   position: relative;
   z-index: 0;
 }
 
 .carousel-item.active .hero-img {
-  transform: scale(1);
 }
 
 .hero-overlay {
@@ -326,10 +323,10 @@ body:not(.offcanvas-open) { overflow: auto; }
   to { opacity: 1; }
 }
 
-.animate-in { animation: fadeInUp .8s ease both .2s; }
-.fade-in { animation: fadeInUp .8s ease both; }
-.fade-in-delayed { animation: fadeInUp .8s ease .15s both; }
-.slide-up { animation: fadeInUp .8s ease both; }
+.animate-in { opacity: 1; }
+.fade-in { opacity: 1; }
+.fade-in-delayed { opacity: 1; }
+.slide-up { opacity: 1; }
 
 /* Card hover lift */
 .card-lift {
@@ -648,9 +645,12 @@ body:not(.offcanvas-open) { overflow: auto; }
 .steam-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.28); }
 .steam-icon { width: 18px; height: 18px; fill: #fff; opacity: .9; }
 
+.social-btn { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: var(--muted); transition: all 0.3s ease; text-decoration: none; }
+.social-btn:hover { transform: translateY(-3px); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.3); }
+
 @keyframes floatUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.member-card.reveal { opacity: 0; transform: translateY(12px); }
-.member-card.reveal.in { opacity: 1; transform: translateY(0); animation: floatUp .6s ease both; }
+.member-card.reveal { opacity: 1; transform: translateY(0); }
+.member-card.reveal.in { opacity: 1; transform: translateY(0); }
 
 /* About page - stylish blocks */
 .about-hero {
@@ -716,10 +716,10 @@ body:not(.offcanvas-open) { overflow: auto; }
 .feature-list li:hover { transform: translateX(2px); }
 
 /* Reveal on scroll */
-.reveal { opacity: 1; transform: translateY(0); transition: opacity .6s ease, transform .6s ease; }
+.reveal { opacity: 1; transform: translateY(0); transition: none; }
 .reveal.in { opacity: 1; transform: translateY(0); }
-.reveal.delay-1 { transition-delay: .1s; }
-.reveal.delay-2 { transition-delay: .2s; }
+.reveal.delay-1 { transition-delay: 0s; }
+.reveal.delay-2 { transition-delay: 0s; }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal.in, .card-lift, .content-card { transition: none !important; animation: none !important; }
