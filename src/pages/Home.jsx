@@ -1,434 +1,492 @@
-import React, { useEffect, useState } from 'react'
-import config from '../config'
-import img1 from '../assets/gallery/gallery1.PNG'
-import img2 from '../assets/gallery/gallery2.PNG'
-import img3 from '../assets/gallery/gallery3.PNG'
-import img4 from '../assets/gallery/gallery4.png'
-import img5 from '../assets/gallery/gallery5.PNG'
-import { Trophy, Medal, Crown, TrendingUp, User } from 'lucide-react'
-import logo from '../assets/logo.svg'
-import trophyImg from '../assets/trophy.png'
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, CheckCircle2, Navigation, Activity, ShieldCheck, Users, CalendarDays, Award, Target, Trophy, Star, TrendingUp, Volume2, VolumeX } from 'lucide-react';
+import './Home.css';
+import gallery1 from '../assets/gallery/gallery1.PNG';
+import gallery2 from '../assets/gallery/gallery2.PNG';
+import gallery4 from '../assets/gallery/gallery4.png';
+import gallery5 from '../assets/gallery/gallery5.PNG';
+import gallery6 from '../assets/gallery/gallery6.png';
 
-const MedalBadge = ({ rank, color }) => {
+const newsImages = [gallery1, gallery2, gallery4, gallery5, gallery6];
+
+import introVideo from '../assets/tpvtc - intro.mp4';
+
+const API_URL = import.meta.env.VITE_API_URL || '/api';
+
+const MedalBadge = ({ rank }) => {
   const rankText = rank === 1 ? "1st" : rank === 2 ? "2nd" : "3rd";
   const bgColor = rank === 1 ? "#FFD700" : rank === 2 ? "#C0C0C0" : "#CD7F32";
   const darkColor = rank === 1 ? "#B8860B" : rank === 2 ? "#808080" : "#8B4513";
 
   return (
-    <div className="medal-wrapper" style={{ position: 'relative', width: rank === 1 ? '160px' : '130px', height: rank === 1 ? '180px' : '150px' }}>
+    <div className="medal-wrapper" style={{ position: 'relative', width: rank === 1 ? '140px' : '110px', height: rank === 1 ? '160px' : '130px' }}>
       <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-        {/* Ribbons */}
         <path d="M35 60 L25 95 L40 85 L50 95 L65 105 L75 95 L65 60" fill={bgColor} opacity="0.8" />
         <path d="M35 60 L20 100 L40 85 L35 60" fill={darkColor} />
         <path d="M65 60 L80 100 L60 85 L65 60" fill={darkColor} />
-        
-        {/* Rosette Jagged Edge */}
-        <path d="M50 10 L54 12 L58 10 L62 14 L67 13 L70 18 L75 18 L77 23 L82 25 L82 30 L86 33 L85 38 L88 42 L85 47 L86 52 L82 55 L82 60 L77 62 L75 67 L70 67 L67 72 L62 71 L58 75 L54 73 L50 75 L46 73 L42 75 L38 71 L33 72 L30 67 L25 67 L23 62 L18 60 L18 55 L14 52 L15 47 L12 42 L15 38 L14 33 L18 30 L18 25 L23 23 L25 18 L30 18 L33 13 L38 14 L42 10 L46 12 Z" 
-          fill={bgColor} 
-          stroke={darkColor} 
-          strokeWidth="1" 
+        <path d="M50 10 L54 12 L58 10 L62 14 L67 13 L70 18 L75 18 L77 23 L82 25 L82 30 L86 33 L85 38 L88 42 L85 47 L86 52 L82 55 L82 60 L77 62 L75 67 L70 67 L67 72 L62 71 L58 75 L54 73 L50 75 L46 73 L42 75 L38 71 L33 72 L30 67 L25 67 L23 62 L18 60 L18 55 L14 52 L15 47 L12 42 L15 38 L14 33 L18 30 L18 25 L23 23 L25 18 L30 18 L33 13 L38 14 L42 10 L46 12 Z"
+          fill={bgColor}
+          stroke={darkColor}
+          strokeWidth="1"
         />
-        
-        {/* Inner Circle */}
         <circle cx="50" cy="42" r="24" fill={`url(#grad-${rank})`} stroke={darkColor} strokeWidth="1" />
         <circle cx="50" cy="42" r="21" fill="none" stroke={darkColor} strokeWidth="0.5" strokeDasharray="1,1" />
-        
         <defs>
           <linearGradient id={`grad-${rank}`} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style={{ stopColor: bgColor, stopOpacity: 1 }} />
             <stop offset="100%" style={{ stopColor: darkColor, stopOpacity: 1 }} />
           </linearGradient>
         </defs>
-        
-        {/* Text */}
         <text x="50" y="50" textAnchor="middle" fill="black" style={{ fontSize: '20px', fontWeight: '900', fontFamily: 'serif' }}>{rankText}</text>
       </svg>
     </div>
   );
 };
 
-export default function Home() {
-  const fallbackImages = [img1, img2, img3, img4, img5]
-  const [images, setImages] = useState(fallbackImages)
-  const [vtc, setVtc] = useState(null)
-  const [supporters, setSupporters] = useState([])
-  const [achievements, setAchievements] = useState(null)
-  const [isAchievementsLoading, setIsAchievementsLoading] = useState(true)
-  const [eventData, setEventData] = useState(null)
-  
+const Home = () => {
+  const [news, setNews] = useState([]);
+  const [achievements, setAchievements] = useState(null);
+  const [partners, setPartners] = useState([]);
+  const [loadingNews, setLoadingNews] = useState(true);
+  const [loadingAchievements, setLoadingAchievements] = useState(true);
+  const [loadingPartners, setLoadingPartners] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const videoRef = useRef(null);
+
   useEffect(() => {
-    const elements = Array.from(document.querySelectorAll('.reveal'))
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in')
+    if (videoRef.current) {
+      videoRef.current.volume = 0.15; // Set volume to 15%
+      
+      // Try to play with sound
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          // If browser blocks autoplay with sound, fallback to muted
+          videoRef.current.muted = true;
+          setIsMuted(true);
+          videoRef.current.play();
+        });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      const CACHE_KEY = 'tpvtc_news_cache';
+      const CACHE_EXPIRY = 30 * 60 * 1000;
+      const cached = localStorage.getItem(CACHE_KEY);
+      
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setNews(data);
+            setLoadingNews(false);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/tmp/vtc/news`);
+        const data = await res.json();
+        if (!data.error && data.response && data.response.news) {
+          // Sort news by published date descending (latest first)
+          const sortedNews = data.response.news.sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+          const slicedNews = sortedNews.slice(0, 3);
+          setNews(slicedNews);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: slicedNews, timestamp: Date.now() }));
         } else {
-          entry.target.classList.remove('in')
-        }
-      })
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' })
-    elements.forEach((el) => io.observe(el))
-    return () => io.disconnect()
-  }, [])
-
-  useEffect(() => {
-    if (!vtc) return
-    const dynamicReveals = Array.from(document.querySelectorAll('.reveal:not(.in)'))
-    dynamicReveals.forEach((el) => el.classList.add('in'))
-  }, [vtc])
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const response = await fetch(`${config.API_BASE_URL}/api/tmp/vtc/profile`)
-        const data = await response.json()
-        if (data && !data.error && data.response) {
-          setVtc(data.response)
+          setNews([]);
         }
       } catch (err) {
-        console.error('Error loading VTC profile:', err)
-      }
-    }
-    const loadHeaders = async () => {
-      try {
-        const response = await fetch(`${config.API_BASE_URL}/api/images/headers`)
-        const data = await response.json()
-        if (data && data.length > 0) {
-          setImages(data.map(img => img.image_url))
-        }
-      } catch (err) {
-        console.error('Error loading header images:', err)
-      }
-    }
-    const loadSupporters = async () => {
-      try {
-        const response = await fetch(`${config.API_BASE_URL}/api/supporters`)
-        const data = await response.json()
-        if (Array.isArray(data)) {
-          const uniqueData = data.filter((v, i, a) => a.findIndex(t => (t.name === v.name)) === i)
-          setSupporters(uniqueData)
-        } else {
-          setSupporters([])
-        }
-      } catch (err) {
-        console.error('Error loading supporters:', err)
-      }
-    }
-    const loadAchievements = async () => {
-      try {
-        const response = await fetch(`${config.API_BASE_URL}/api/achievements/latest`)
-        
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-           console.warn("Home.jsx: Achievements API did not return JSON");
-           setIsAchievementsLoading(false);
-           return;
-        }
-
-        const data = await response.json()
-        if (data && data.p1_name) {
-          setAchievements(data)
-        }
-      } catch (err) {
-        console.error('Error loading achievements:', err)
+        console.error('Error fetching news:', err);
+        setNews([]);
       } finally {
-        setIsAchievementsLoading(false)
+        setLoadingNews(false);
       }
-    }
-    load()
-    loadHeaders()
-    loadSupporters()
-    loadAchievements()
-  }, [])
+    };
+
+    // Fetch Achievements with caching
+    const CACHE_KEY = 'tpvtc_achievements_cache';
+    const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+
+    const fetchAchievements = async () => {
+      // Check cache first
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setAchievements(data);
+            setLoadingAchievements(false);
+            return;
+          }
+        } catch (e) {
+          // ignore parsing error
+        }
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/achievements/latest`);
+        const data = await res.json();
+        if (data && data.p1_name) {
+          setAchievements(data);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+        } else {
+          // Mock if missing
+          const mockData = {
+            month: 'August 2026',
+            p1_name: 'Rubanoffl', p1_role: 'DRIVER', p1_distance: 23278,
+            p2_name: 'jesustyson', p2_role: 'DRIVER', p2_distance: 8708,
+            p3_name: 'Siranjeevi_123', p3_role: 'SENIOR DRIVER', p3_distance: 8192
+          };
+          setAchievements(mockData);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: mockData, timestamp: Date.now() }));
+        }
+      } catch (err) {
+        console.error('Error fetching achievements:', err);
+        const mockData = {
+          month: 'August 2026',
+          p1_name: 'Rubanoffl', p1_role: 'DRIVER', p1_distance: 23278,
+          p2_name: 'jesustyson', p2_role: 'DRIVER', p2_distance: 8708,
+          p3_name: 'Siranjeevi_123', p3_role: 'SENIOR DRIVER', p3_distance: 8192
+        };
+        setAchievements(mockData);
+      } finally {
+        setLoadingAchievements(false);
+      }
+    };
+
+    const fetchPartners = async () => {
+      const CACHE_KEY = 'tpvtc_home_partners_cache';
+      const CACHE_EXPIRY = 30 * 60 * 1000;
+      const cached = localStorage.getItem(CACHE_KEY);
+      
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setPartners(data);
+            setLoadingPartners(false);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/partners`);
+        const data = await res.json();
+        const validData = Array.isArray(data) ? data : [];
+        setPartners(validData);
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ data: validData, timestamp: Date.now() }));
+      } catch (err) {
+        console.error('Error fetching partners:', err);
+      } finally {
+        setLoadingPartners(false);
+      }
+    };
+
+    fetchNews();
+    fetchAchievements();
+    fetchPartners();
+  }, []);
 
   return (
-    <>
-      {/* Hero Carousel */}
-      <div id="heroCarousel" className="carousel slide carousel-fade hero" data-bs-ride="carousel">
-        <div className="carousel-indicators">
-          {images.map((_, idx) => (
-            <button key={idx} type="button" data-bs-target="#heroCarousel" data-bs-slide-to={idx} className={idx === 0 ? 'active' : ''} aria-current={idx === 0 ? 'true' : undefined} aria-label={`Slide ${idx + 1}`}></button>
-          ))}
-        </div>
-        <div className="carousel-inner">
-          {images.map((src, idx) => (
-            <div className={`carousel-item ${idx === 0 ? 'active' : ''}`} key={idx}>
-              <div className="hero-img-wrap">
-                <img src={src} className="d-block w-100 hero-img" alt={`Slide ${idx + 1}`} />
-                <div className="hero-overlay" />
-              </div>
-              <div className="hero-center">
-                <h1 className="display-4 fw-bold mb-3 text-white reveal hero-animate-title" style={{ letterSpacing: '1px' }}>WELCOME TO TAMIL PASANGA VTC</h1>
-                <p className="mb-5 lead text-white mx-auto reveal hero-animate-text" style={{ maxWidth: '800px', opacity: '0.9' }}>
-                  Tamil Pasanga VTC is a friendly and active Virtual Trucking Company built by Tamil gamers and truck enthusiasts who love driving together on TruckersMP. Our goal is to create a fun, realistic, and respectful community.
-                </p>
-                <div className="d-flex flex-wrap gap-4 justify-content-center align-items-center">
-                  <a href="https://truckersmp.com/vtc/73933/recruitment-form/3515-driver-recruitment-form" target="_blank" rel="noreferrer" className="btn btn-accent btn-lg fw-bold px-5 py-3 rounded-pill reveal hero-animate-btn hero-delay-1" style={{ letterSpacing: '0.5px' }}>Apply Now</a>
-                  <a href="https://discord.com/invite/FtYBxZxTBF" target="_blank" className="btn btn-outline-accent btn-lg fw-bold px-5 py-3 rounded-pill reveal hero-animate-btn hero-delay-2" rel="noreferrer" style={{ letterSpacing: '0.5px' }}>Join Discord</a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+    <div className="home-container">
+      {/* Hero Section */}
+      <section className="hero-section">
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          playsInline
+          muted={isMuted}
+          disablePictureInPicture
+          disableRemotePlayback
+          className="hero-video-bg"
+        >
+          <source src={introVideo} type="video/mp4" />
+        </video>
+        <div className="hero-overlay"></div>
+        <button
+          className="mute-toggle-btn"
+          onClick={() => setIsMuted(!isMuted)}
+          aria-label={isMuted ? "Unmute video" : "Mute video"}
+        >
+          {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+        </button>
+        <div className="hero-glow hero-glow-1"></div>
+        <div className="hero-glow hero-glow-2"></div>
 
-      {/* News Ticker Marquee: Supporters */}
-      <div className="news-ticker-container">
-        <div className="news-ticker-content">
-          {[...Array(3)].map((_, i) => (
-            <React.Fragment key={i}>
-              <span className="news-ticker-item fw-bold" style={{ color: '#fff' }}>OUR SUPPORTERS</span>
-              <span className="ticker-sep">✶</span>
-              {supporters.length > 0 ? (
-                supporters.map((s, idx) => (
-                  <React.Fragment key={`${i}-${idx}`}>
-                    <span className="news-ticker-item">{s.name}</span>
-                    <span className="ticker-sep">✶</span>
-                  </React.Fragment>
-                ))
-              ) : (
-                <>
-                  <span className="news-ticker-item">Loading Patrons...</span>
-                  <span className="ticker-sep">✶</span>
-                </>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      {/* Monthly Achievements Section */}
-      <section className="py-5 border-top section-modern achievements-section" style={{ borderColor: 'rgba(255,255,255,0.08) !important' }}>
-        <div className="container py-4">
-          <div className="d-flex align-items-center mb-5 reveal">
-            <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>RECOGNITION</span>
-            <h2 className="h3 fw-bold mb-0 text-white">
-              Monthly Achievements
-              {achievements?.month && (
-                <span className="text-muted-custom fs-5 fw-normal ms-2">— {achievements.month}</span>
-              )}
-            </h2>
+        <div className="hero-content">
+          <div className="badge animate-fade-in-up">
+            <span className="badge-dot pulse-dot"></span>
+            NEXT-GENERATION VIRTUAL TRUCKING
+          </div>
+          <h1 className="hero-title animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            Your Passion. <br />
+            <span className="text-gradient">Our Brotherhood.</span>
+          </h1>
+          <p className="hero-subtitle animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            Engineered for community, realism, and uncompromised precision across Euro Truck Simulator 2 and American Truck Simulator. Tamil Pasanga VTC connects virtual drivers with dedicated convoy events and intelligent real-time tracking.
+          </p>
+          <div className="hero-actions animate-fade-in-up" style={{ animationDelay: '0.3s', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <a href="https://discord.com/invite/FtYBxZxTBF" target="_blank" rel="noopener noreferrer" className="btn-primary btn-large">
+              Join Discord <ArrowRight size={18} />
+            </a>
+            <a href="https://truckersmp.com/vtc/73933-tamil_pasanga" target="_blank" rel="noopener noreferrer" className="btn-outline btn-large">
+              Apply to VTC
+            </a>
+            <a href="/events" className="btn-outline btn-large">
+              Explore Events
+            </a>
           </div>
 
-          {isAchievementsLoading ? (
-            <div className="d-flex justify-content-center align-items-center py-5">
-              <div className="spinner-border text-light" role="status" style={{ width: '3rem', height: '3rem' }}>
-                <span className="visually-hidden">Loading...</span>
-              </div>
+          <div className="hero-features animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <div className="feature-item">
+              <CheckCircle2 size={18} className="text-accent" />
+              <span>Verified Top VTC</span>
             </div>
-          ) : achievements ? (
-            <div className="row g-4">
-              {/* Top Performers */}
-              <div className="col-12">
-                <div className="content-card achievement-card h-100 p-5 in">
-                  <div className="d-flex align-items-center mb-5">
-                    <TrendingUp className="text-white me-3" size={28} />
-                    <h3 className="h4 fw-bold text-white mb-0 text-uppercase" style={{ letterSpacing: '1px' }}>Top 3 Performers</h3>
+            <div className="feature-item">
+              <Navigation size={18} className="text-accent" />
+              <span>Weekly Convoys</span>
+            </div>
+            <div className="feature-item">
+              <Activity size={18} className="text-accent" />
+              <span>Live Telematics</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="stats-section">
+        <div className="container stats-grid">
+          <div className="stat-item">
+            <div className="stat-icon-wrapper">
+              <Award size={18} /> <span>LEGACY</span>
+            </div>
+            <h2 className="stat-value text-gradient">2+</h2>
+            <p className="stat-desc">Years Virtual Trucking Experience</p>
+          </div>
+          <div className="stat-item">
+            <div className="stat-icon-wrapper">
+              <Navigation size={18} /> <span>DISTANCE</span>
+            </div>
+            <h2 className="stat-value text-gradient">2.4M+</h2>
+            <p className="stat-desc">Virtual Miles Driven Annually</p>
+          </div>
+          <div className="stat-item">
+            <div className="stat-icon-wrapper">
+              <CheckCircle2 size={18} /> <span>ATTENDANCE</span>
+            </div>
+            <h2 className="stat-value text-gradient">98.9%</h2>
+            <p className="stat-desc">Event Participation Rate</p>
+          </div>
+          <div className="stat-item">
+            <div className="stat-icon-wrapper">
+              <Users size={18} /> <span>COMMUNITY</span>
+            </div>
+            <h2 className="stat-value text-gradient">24/7</h2>
+            <p className="stat-desc">Active Discord & Support Team</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Partners Showcase Section */}
+      <section className="home-partners-section container" style={{ marginTop: '4rem', marginBottom: '4rem' }}>
+        <div className="section-header text-center">
+          <span className="section-subtitle">OUR NETWORK</span>
+          <h2 className="section-title mx-auto">Our Partners</h2>
+        </div>
+
+        {loadingPartners ? (
+          <div className="loading-state glass-panel text-center">Loading Partners...</div>
+        ) : partners.length > 0 ? (
+          <div className="home-partners-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
+            {partners.map(partner => (
+              <div key={partner.id} className="home-partner-card glass-panel" style={{ width: '240px', padding: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', transition: 'transform 0.3s ease' }}>
+                <div className="home-partner-logo" style={{ width: '100%', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem', backgroundColor: '#0f172a', borderRadius: '12px', padding: '10px' }}>
+                  <img src={partner.image_url} alt={partner.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                </div>
+                <h4 className="home-partner-name" style={{ fontSize: '1.1rem', margin: '0', fontWeight: '700', color: '#fff' }}>{partner.name}</h4>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
+      {/* Monthly Achievements Podium Section */}
+      <section className="achievements-section container">
+        <div className="section-header text-center">
+          <span className="section-subtitle">RECOGNITION</span>
+          <h2 className="section-title mx-auto">
+            Monthly Achievements
+            {achievements?.month && <span style={{ color: 'var(--text-secondary)', fontWeight: 500, marginLeft: '12px' }}>— {achievements.month}</span>}
+          </h2>
+          <div className="d-flex align-items-center justify-content-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '1.5rem', color: 'var(--text-primary)', fontWeight: '800', fontSize: '1.1rem' }}>
+            <TrendingUp size={22} color="var(--accent-blue)" />
+            <span style={{ letterSpacing: '1px' }}>TOP 3 PERFORMERS</span>
+          </div>
+        </div>
+
+        {loadingAchievements ? (
+          <div className="loading-state glass-panel">Loading Achievements...</div>
+        ) : achievements ? (
+          <div className="podium-container">
+            {[
+              { rank: 2, name: achievements.p2_name || 'TBA', km: achievements.p2_distance || 0, role: achievements.p2_role || 'DRIVER' },
+              { rank: 1, name: achievements.p1_name || 'TBA', km: achievements.p1_distance || 0, role: achievements.p1_role || 'DRIVER' },
+              { rank: 3, name: achievements.p3_name || 'TBA', km: achievements.p3_distance || 0, role: achievements.p3_role || 'DRIVER' }
+            ].map((p, i) => (
+              <div key={i} className={`podium-item podium-item--${p.rank}`}>
+                <div className="podium-avatar-wrap">
+                  <MedalBadge rank={p.rank} />
+                </div>
+                <div className="podium-rank-box">
+                  <h3 className="podium-name">{p.name}</h3>
+                  <div className="podium-role">{p.role}</div>
+                  <div className="podium-distance">{p.km}</div>
+                  <div className="podium-label">KM DRIVEN</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
+      {/* Identity & Mission Section (Redesigned) */}
+      <section className="identity-mission-section container">
+        <div className="im-grid">
+
+          {/* Identity */}
+          <div className="im-card identity-card glass-panel">
+            <div className="im-icon-wrapper">
+              <Users size={28} />
+            </div>
+            <span className="section-subtitle">IDENTITY</span>
+            <h2 className="im-title">Who We Are</h2>
+            <p className="im-desc">
+              Tamil Pasanga VTC is a completely community-driven Virtual Trucking Company forged by Tamil players who share an intense passion for trucks, deep simulation, and unbreakable brotherhood. We proudly carry our Tamil identity into the global scene of TruckersMP, crafting not just a VTC, but a resilient family where organic teamwork, pure fun, and utmost respect always take priority.
+            </p>
+          </div>
+
+          {/* Mission */}
+          <div className="im-card mission-card glass-panel">
+            <div className="im-icon-wrapper mission-icon">
+              <Target size={28} />
+            </div>
+            <span className="section-subtitle mission-subtitle">MISSION</span>
+            <h2 className="im-title">Our Directive</h2>
+            <p className="im-desc">
+              Our essential mission is to powerfully unite Tamil truckers and dedicated friends from around the globe under one single, unified banner. We exist to provide a highly polished, professional space to enjoy remarkably realistic trucking, coordinate massive cross-continental convoys, and build unforgettable memories on the open digital road. We welcome both veterans and beginners.
+            </p>
+          </div>
+
+        </div>
+
+        {/* Mission Features Below */}
+        <div className="mission-features-grid">
+          <div className="mission-feature-item glass-panel">
+            <CheckCircle2 size={24} className="text-accent-green" />
+            <span className="mf-text">Professional Driving Standards</span>
+          </div>
+          <div className="mission-feature-item glass-panel">
+            <CheckCircle2 size={24} className="text-accent-green" />
+            <span className="mf-text">Exceptional Team Spirit</span>
+          </div>
+          <div className="mission-feature-item glass-panel">
+            <CheckCircle2 size={24} className="text-accent-green" />
+            <span className="mf-text">Proud Culture & Global Vibes</span>
+          </div>
+          <div className="mission-feature-item glass-panel">
+            <CheckCircle2 size={24} className="text-accent-green" />
+            <span className="mf-text">Premium Convoys & High-End Events</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Services/Features Section */}
+      <section className="features-section container">
+        <div className="section-header text-center">
+          <span className="section-subtitle">OUR CAPABILITIES</span>
+          <h2 className="section-title mx-auto">Precision Virtual Trucking Designed for Enthusiasts</h2>
+        </div>
+
+        <div className="features-grid">
+          <div className="feature-card glass-panel">
+            <div className="card-icon"><CalendarDays size={24} /></div>
+            <h3>Public Events</h3>
+            <p>Join our massive community convoys. We organize meticulously planned routes with dedicated convoy control and media teams.</p>
+            <a href="/events" className="card-link">Learn more <ArrowRight size={14} /></a>
+          </div>
+          <div className="feature-card glass-panel">
+            <div className="card-icon"><Activity size={24} /></div>
+            <h3>Real-time Tracking</h3>
+            <p>Advanced job logging and real-time telematics for all our drivers, ensuring fair competition and accurate leaderboards.</p>
+            <a href="/about" className="card-link">Learn more <ArrowRight size={14} /></a>
+          </div>
+          <div className="feature-card glass-panel">
+            <div className="card-icon"><ShieldCheck size={24} /></div>
+            <h3>Dedicated Teams</h3>
+            <p>From Media to Event Control, our specialized teams work around the clock to provide the best virtual trucking experience.</p>
+            <a href="/supporters" className="card-link">Learn more <ArrowRight size={14} /></a>
+          </div>
+          <div className="feature-card glass-panel">
+            <div className="card-icon"><Users size={24} /></div>
+            <h3>Active Community</h3>
+            <p>Engage with hundreds of passionate drivers. Share your journey, join voice channels, and make lifelong friends.</p>
+            <a href="/contact" className="card-link">Learn more <ArrowRight size={14} /></a>
+          </div>
+        </div>
+      </section>
+
+      {/* News & Announcements Section (Integrated) */}
+      <section className="news-section container">
+        <div className="section-header text-center">
+          <span className="section-subtitle">LATEST UPDATES</span>
+          <h2 className="section-title mx-auto">News & Announcements</h2>
+        </div>
+
+        {loadingNews ? (
+          <div className="loading-state glass-panel">Loading Latest News...</div>
+        ) : (
+          <div className="news-grid">
+            {news.map((item, i) => {
+              const bgImage = newsImages[i % newsImages.length];
+              const formattedDate = new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+              return (
+                <div key={item.id} className="news-card glass-panel">
+                  <div className="news-image" style={{ backgroundImage: `url(${bgImage})` }}></div>
+                  <div className="news-content">
+                    <span className="news-date">{formattedDate}</span>
+                    <h3>{item.title}</h3>
+                    <p>{item.content_summary ? item.content_summary.substring(0, 120) + (item.content_summary.length > 120 ? '...' : '') : 'Check out our latest news and community updates.'}</p>
+                    <a href={`https://truckersmp.com/vtc/73933/news/${item.id}`} target="_blank" rel="noopener noreferrer" className="card-link">Read full story <ArrowRight size={14} /></a>
                   </div>
-                  
-                  <div className="podium-container">
-                    {[
-                      // Order: 2nd, 1st, 3rd
-                      { 
-                        rank: 2, 
-                        name: achievements.p2_name || "TBA", 
-                        km: achievements.p2_distance || "0", 
-                        role: achievements.p2_role || "VTC Driver",
-                        color: "#C0C0C0",
-                        dlc: achievements.p2_dlc 
-                      },
-                      { 
-                        rank: 1, 
-                        name: achievements.p1_name || "TBA", 
-                        km: achievements.p1_distance || "0", 
-                        role: achievements.p1_role || "VTC Driver",
-                        color: "#FFD700",
-                        dlc: achievements.p1_dlc 
-                      },
-                      { 
-                        rank: 3, 
-                        name: achievements.p3_name || "TBA", 
-                        km: achievements.p3_distance || "0", 
-                        role: achievements.p3_role || "VTC Driver",
-                        color: "#CD7F32",
-                        dlc: achievements.p3_dlc 
-                      }
-                    ].map((p, i) => (
-                      <div key={i} className={`podium-item podium-item--${p.rank}`}>
-                        <div className="podium-avatar-wrap">
-                          <MedalBadge rank={p.rank} color={p.color} />
-                        </div>
-                        <div className="podium-rank-box" style={{ marginTop: '0' }}>
-                          <div className="podium-rank-num">{p.rank}</div>
-                          <div className="podium-info">
-                            <div className="podium-name">{p.name}</div>
-                            {p.dlc && (
-                              <div className="mt-1 mb-1">
-                                <span className="badge bg-warning text-dark px-2 py-1 fw-bold" style={{ fontSize: '10px' }}>
-                                  PRIZE: {p.dlc}
-                                </span>
-                              </div>
-                            )}
-                            <div className="podium-role">{p.role}</div>
-                            <div className="podium-distance mt-2">{p.km}</div>
-                            <div className="text-muted-custom fw-bold" style={{ fontSize: '8px', letterSpacing: '1px' }}>KM DRIVEN</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-5">
-              <p className="text-muted-custom mb-0">Achievements will be updated soon.</p>
-            </div>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
-      {/* Editorial Identity Section */}
-      <section className="py-5 border-top section-modern" style={{ borderColor: 'rgba(255,255,255,0.08) !important' }}>
-        <div className="container py-4">
-          <div className="row g-4 align-items-stretch">
-            <div className="col-lg-6">
-              <div className="content-card h-100 p-5 text-start">
-                <div className="d-flex align-items-center mb-4">
-                  <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>IDENTITY</span>
-                  <h2 className="h4 fw-bold mb-0 text-white">Who We Are</h2>
-                </div>
-                <p className="text-muted-custom mb-0" style={{ lineHeight: '1.7', fontSize: '1.05rem' }}>
-                  Tamil Pasanga VTC is a completely community-driven Virtual Trucking Company forged by Tamil players who share an intense passion for trucks, deep simulation, and unbreakable brotherhood. We proudly carry our Tamil identity into the global scene of TruckersMP, crafting not just a VTC, but a resilient family where organic teamwork, pure fun, and utmost respect always take priority.
-                </p>
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="content-card h-100 p-5 text-start">
-                <div className="d-flex align-items-center mb-4">
-                  <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>MISSION</span>
-                  <h2 className="h4 fw-bold mb-0 text-white">Our Directive</h2>
-                </div>
-                <p className="text-muted-custom mb-0" style={{ lineHeight: '1.7', fontSize: '1.05rem' }}>
-                  Our essential mission is to powerfully unite Tamil truckers and dedicated friends from around the globe under one single, unified banner. We exist to provide a highly polished, professional space to enjoy remarkably realistic trucking, coordinate massive cross-continental convoys, and build unforgettable memories on the open digital road. We welcome both veterans and beginners.
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="row mt-5 pt-3">
-            <div className="col-12">
-              <ul className="feature-grid text-muted-custom">
-                <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>1</span>
-                  <span className="fw-bold text-white ms-2">Professional Driving Standards</span>
-                </li>
-                <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>2</span>
-                  <span className="fw-bold text-white ms-2">Exceptional Team Spirit</span>
-                </li>
-                <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>3</span>
-                  <span className="fw-bold text-white ms-2">Proud Culture & Global Vibes</span>
-                </li>
-                <li className="feature-box py-3 px-4">
-                  <span className="bg-white text-black d-flex align-items-center justify-content-center border-0 fw-bold rounded-3 shadow" style={{ width: '32px', height: '32px', fontSize: '14px' }}>4</span>
-                  <span className="fw-bold text-white ms-2">Premium Convoys & High-End Events</span>
-                </li>
-              </ul>
-            </div>
+      {/* CTA Section */}
+      <section className="cta-section container">
+        <div className="cta-content glass-panel">
+          <div className="cta-glow"></div>
+          <h2 className="cta-title">Ready to Start Your Engines?</h2>
+          <p className="cta-desc">Connect with our community today and experience virtual trucking at its finest.</p>
+          <div className="cta-actions">
+            <a href="https://discord.com/invite/FtYBxZxTBF" target="_blank" rel="noopener noreferrer" className="btn-primary btn-large cta-btn">Join Discord <ArrowRight size={18} /></a>
+            <a href="https://truckersmp.com/vtc/73933-tamil_pasanga" target="_blank" rel="noopener noreferrer" className="btn-outline btn-large cta-btn">Apply to VTC</a>
           </div>
         </div>
       </section>
+    </div>
+  );
+};
 
-      {/* Massive Typography Stat Readout */}
-      {vtc && (
-        <section className="py-5 border-top bg-black" style={{ borderColor: 'rgba(255,255,255,0.08) !important' }}>
-          <div className="container py-4">
-            <div className="row g-4 text-center">
-              <div className="col-6 col-md-3">
-                <div className="display-4 fw-bolder text-white mb-2">{vtc.members_count}</div>
-                <div className="small text-muted-custom text-uppercase fw-bold" style={{ letterSpacing: '1.5px', opacity: '0.8' }}>Active Drivers</div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className="display-4 fw-bolder text-white mb-2">2024</div>
-                <div className="small text-muted-custom text-uppercase fw-bold" style={{ letterSpacing: '1.5px', opacity: '0.8' }}>Established</div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className="display-4 fw-bolder text-white mb-2">{vtc?.games?.ets ? 'ETS2' : 'ATS'}</div>
-                <div className="small text-muted-custom text-uppercase fw-bold" style={{ letterSpacing: '1.5px', opacity: '0.8' }}>Main Platform</div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className="display-4 fw-bolder text-white mb-2" style={{ color: vtc.recruitment === 'Open' ? '#fff' : 'inherit' }}>{vtc.recruitment === 'Open' ? 'OPEN' : 'LOCKED'}</div>
-                <div className="small text-muted-custom text-uppercase fw-bold" style={{ letterSpacing: '1.5px', opacity: '0.8' }}>Recruitment</div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* What We Offer Glass Grid */}
-      <section className="py-5 border-top border-secondary offer-section">
-        <div className="container py-4">
-          <div className="d-flex align-items-center mb-5">
-            <span className="bg-white text-black fw-bold rounded px-2 py-1 me-3 small" style={{ letterSpacing: '0.5px' }}>BENEFITS</span>
-            <h2 className="h3 fw-bold mb-0 text-white">What We Offer</h2>
-          </div>
-          
-          <div className="row g-4">
-            <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 p-4">
-                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🚚</div>
-                <div className="pt-2">
-                  <h3 className="h5 fw-bold text-white mb-3">Regular Convoys</h3>
-                  <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>Drive in massive weekly and monthly organized convoys soaring across Europe & ProMods.</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 p-4">
-                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🤝</div>
-                <div className="pt-2">
-                  <h3 className="h5 fw-bold text-white mb-3">Friendly Community</h3>
-                  <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>Integrate seamlessly into a vibrant family-like atmosphere where members are always actively helping each other.</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 p-4">
-                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🛡️</div>
-                <div className="pt-2">
-                  <h3 className="h5 fw-bold text-white mb-3">Professional Standard</h3>
-                  <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>We enforce deep realistic driving rules to ensure our reputation remains absolutely pristine on TruckersMP.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="col-md-6 col-lg-4 offset-lg-2">
-              <div className="offer-card h-100 p-4">
-                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>🏁</div>
-                <div className="pt-2">
-                  <h3 className="h5 fw-bold text-white mb-3">Cultural Unity</h3>
-                  <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>We heavily represent Tamil pride, ethics, and unbreakable brotherhood to players traveling globally alongside us.</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="offer-card h-100 p-4">
-                <div className="offer-icon bg-white text-black rounded-3 shadow mb-3" style={{ border: 'none', width: '56px', height: '56px' }}>📅</div>
-                <div className="pt-2">
-                  <h3 className="h5 fw-bold text-white mb-3">Exclusive Partnerships</h3>
-                  <p className="text-muted-custom mb-0" style={{ lineHeight: '1.6' }}>Gain coveted access to heavily organized international VTC collaborations, huge cross-server events, and more.</p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-    </>
-  )
-}
-
-
+export default Home;

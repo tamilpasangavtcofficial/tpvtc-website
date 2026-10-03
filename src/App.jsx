@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
-import EventsPage from './pages/EventsPage'
-import EventDetailPage from './pages/EventDetailPage'
-import EventBookingPage from './pages/EventBookingPage'
-import TeamPage from './pages/TeamPage'
-import AboutPage from './pages/AboutPage'
+import Events from './pages/Events'
+import Calendar from './pages/Calendar'
+import EventBooking from './pages/EventBooking'
+import About from './pages/About'
 import ContactPage from './pages/ContactPage'
 import TermsOfUse from './pages/TermsOfUse'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -21,22 +21,17 @@ const Placeholder = ({ title }) => (
   </div>
 )
 
-
-
 export default function App() {
   return (
     <div>
-
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/events" element={<EventsPage type="our" />} />
-        <Route path="/events/our" element={<EventsPage type="our" />} />
-        <Route path="/events/attending" element={<EventsPage type="attending" />} />
-        <Route path="/events/:id" element={<EventDetailPage />} />
-        <Route path="/events/:id/book" element={<EventBookingPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/team" element={<TeamPage />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/events/:eventId" element={<EventBooking />} />
+        <Route path="/about" element={<About />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/supporters" element={<Supporters />} />
         <Route path="/partners" element={<Partners />} />

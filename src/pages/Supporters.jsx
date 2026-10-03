@@ -1,114 +1,135 @@
-import { useEffect, useState } from 'react';
-import config from '../config';
-import { Heart, User, ExternalLink, Calendar, Award, Shield } from 'lucide-react';
-import logo from '../assets/logo.svg';
+import React, { useState, useEffect } from 'react';
+import './Supporters.css';
 
-export default function Supporters() {
-    const [supporters, setSupporters] = useState([]);
-    const [loading, setLoading] = useState(true);
+const Supporters = () => {
+  const [supporters, setSupporters] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchSupporters = async () => {
-            try {
-                const res = await fetch(`${config.API_BASE_URL}/api/supporters`);
-                const data = await res.json();
-                if (Array.isArray(data)) {
-                    const uniqueData = data.filter((v, i, a) => a.findIndex(t => (t.name === v.name)) === i);
-                    setSupporters(uniqueData);
-                } else {
-                    setSupporters([]);
-                }
-            } catch (e) {
-                console.error('Failed to fetch supporters:', e);
-            } finally {
-                setLoading(false);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const fetchSupporters = async () => {
+      const CACHE_KEY = 'tpvtc_supporters_cache';
+      const CACHE_EXPIRY = 30 * 60 * 1000; // 30 mins
+      const cached = localStorage.getItem(CACHE_KEY);
+      
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setSupporters(data);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const response = await fetch(`${API_URL}/supporters`);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          const uniqueSupportersMap = new Map();
+          data.forEach(sup => {
+            const id = sup.truckersmp_id || sup.name;
+            const amt = Number(sup.amount) || 0;
+            if (uniqueSupportersMap.has(id)) {
+              const existing = uniqueSupportersMap.get(id);
+              existing.totalAmount += amt;
+              // Ensure we keep the first/earliest support date
+              if (new Date(sup.created_at) < new Date(existing.created_at)) {
+                existing.created_at = sup.created_at;
+              }
+            } else {
+              uniqueSupportersMap.set(id, { ...sup, totalAmount: amt });
             }
-        };
-        fetchSupporters();
-    }, []);
+          });
+          const sortedSupporters = Array.from(uniqueSupportersMap.values())
+            .sort((a, b) => b.totalAmount - a.totalAmount);
+          setSupporters(sortedSupporters);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: sortedSupporters, timestamp: Date.now() }));
+        } else {
+          setSupporters([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch supporters:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    useEffect(() => {
-        const elements = Array.from(document.querySelectorAll('.reveal'));
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in');
-                    io.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        elements.forEach((el) => io.observe(el));
-        return () => io.disconnect();
-    }, [supporters]);
+    fetchSupporters();
+  }, []);
 
-    return (
-        <div className="pb-5" style={{ minHeight: '80vh', paddingTop: '100px' }}>
-            {/* Header Section */}
-            <section className="py-5 text-center reveal">
-                <div className="container py-4">
-                    <div className="d-inline-flex align-items-center justify-content-center mb-4 p-3 rounded-3 bg-white text-black shadow-lg">
-                        <Heart size={48} fill="currentColor" />
+  return (
+    <div className="supporters-wrapper">
+      <div className="supporters-hero">
+        <h4 className="overline">Wall of Fame</h4>
+        <h1 className="display-title">Our <span className="text-accent">Supporters</span></h1>
+        <p className="hero-subtitle">
+          The incredible individuals who fuel our journey. Thank you for your unwavering support.
+        </p>
+      </div>
+
+      <div className="container">
+        {loading ? (
+          <div className="loading-indicator">
+            <div className="loader-bar"></div>
+            <span>Loading Supporters...</span>
+          </div>
+        ) : supporters.length === 0 ? (
+          <div className="text-center text-muted py-5">No supporters found at this time.</div>
+        ) : (
+          <div className="supporters-modern-container">
+            <div className="supporters-tabs">
+              <button className="tab-btn active">OFFICIAL PATRONS</button>
+              <button className="tab-btn">COMMUNITY HEROES</button>
+            </div>
+
+            <div className="supporters-card-grid">
+              {supporters.map((sup) => (
+                <div key={sup.id} className="modern-supporter-card">
+                  <div className="card-bg"></div>
+                  <div className="card-overlay"></div>
+                  
+                  <div className="card-content">
+                    <div className="card-header">
+                      <div className="card-logo">
+                        <img src="/src/assets/logo.svg" alt="TPVTC Logo" />
+                      </div>
+                      <div className="card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                      </div>
                     </div>
-                    <h1 className="display-4 fw-bold mb-3 text-white accent-glow">Our Supporters</h1>
-                    <p className="lead text-muted-custom mx-auto mb-5" style={{ maxWidth: '700px' }}>
-                        Honoring the dedicated individuals who contribute to our community's growth and success. Every contribution helps us build a better experience for all drivers.
-                    </p>
-                    <div className="d-flex justify-content-center gap-2">
-                        <div className="badge bg-white text-black px-4 py-2 rounded-pill fw-bold small shadow-lg">OFFICIAL PATRONS</div>
-                        <div className="badge border border-white border-opacity-20 text-white px-4 py-2 rounded-pill fw-bold small">COMMUNITY HEROES</div>
+
+                    <div className="card-body">
+                      <h3 className="card-name">{sup.name}</h3>
+                      <div className="card-meta">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                        </svg>
+                        <span>Member Since {new Date(sup.created_at || Date.now()).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
+                      </div>
+                      <div className="card-amount">
+                        <span className="amt-label">Contributed:</span>
+                        <span className="amt-value">₹{sup.totalAmount}</span>
+                      </div>
                     </div>
-                </div>
-            </section>
 
-            {/* Supporters Grid */}
-            <section className="py-5 bg-black bg-opacity-20 border-top border-bottom" style={{ borderColor: 'rgba(255,255,255,0.05) !important' }}>
-                <div className="container">
-                    {loading ? (
-                        <div className="text-center py-5">
-                            <div className="spinner-border text-accent mb-3" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                            <p className="text-muted-custom small">Synchronizing supporter gallery...</p>
-                        </div>
-                    ) : (
-                        <div className="row g-4">
-                            {supporters.map((s, idx) => (
-                                <div key={s.id} className="col-md-6 col-lg-4 reveal" style={{ transitionDelay: `${idx * 100}ms` }}>
-                                    <div className="supporter-card card-with-bg p-5 h-100 border border-white border-opacity-10 transition-all hover:scale-105" 
-                                        style={{ background: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(20px)' }}>
-                                        <div className="d-flex align-items-start justify-content-between mb-4">
-                                            <div className="p-2 bg-white text-black rounded-3 shadow-lg d-flex align-items-center justify-content-center" style={{ width: '64px', height: '64px' }}>
-                                                <img src={logo} alt="VTC Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                            </div>
-                                            <Award size={24} className="text-white opacity-50" />
-                                        </div>
-                                        
-                                        <h3 className="h5 fw-bold text-white mb-2">{s.name}</h3>
-                                        <div className="d-flex align-items-center gap-2 mb-4 small text-muted-custom">
-                                            <Shield size={14} className="text-white opacity-70" />
-                                            <span>Member Since {new Date(s.created_at).toLocaleDateString()}</span>
-                                        </div>
-
-                                        <div className="border-top border-white border-opacity-5 pt-4 mt-auto">
-                                            <div className="d-flex flex-column gap-3">
-                                                <div className="d-flex justify-content-between align-items-center">
-                                                    <span className="x-small text-muted-custom fw-bold text-uppercase tracking-widest">ID Reference</span>
-                                                    <code className="text-white small bg-white bg-opacity-10 px-2 py-1 rounded">#{s.truckersmp_id || 'N/A'}</code>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            {supporters.length === 0 && (
-                                <div className="col-12 text-center py-5">
-                                    <p className="text-muted-custom opacity-50 italic lead mb-0">Our supporter list is currently being updated.</p>
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    <div className="card-footer">
+                      <span className="footer-label">ID REFERENCE</span>
+                      <span className="footer-value">#{sup.truckersmp_id}</span>
+                    </div>
+                  </div>
                 </div>
-            </section>
-        </div>
-    );
-}
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Supporters;

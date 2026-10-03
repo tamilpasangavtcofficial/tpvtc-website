@@ -1,61 +1,58 @@
-import { useEffect } from 'react'
-import img6 from '../assets/gallery/gallery6.png'
+import React, { useEffect } from 'react';
+import { MessageSquare, ExternalLink, MapPin } from 'lucide-react';
+import './ContactPage.css';
 
 export default function ContactPage() {
   useEffect(() => {
     requestAnimationFrame(() => {
-      Array.from(document.querySelectorAll('.reveal')).forEach((el) => el.classList.add('in'))
-    })
-  }, [])
+      Array.from(document.querySelectorAll('.animate-fade-in-up')).forEach((el) => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    });
+  }, []);
 
   return (
-    <div className="container py-5">
-      <div className="text-center reveal mb-5">
-        <h1 className="display-5 fw-bold mb-3 text-white">Contact Tamil Pasanga VTC</h1>
-        <div className="mx-auto mb-4" style={{ width: '60px', height: '4px', background: '#fff', borderRadius: '2px' }}></div>
-        <p className="text-muted-custom lead mx-auto" style={{ maxWidth: '700px' }}>
+    <div className="contact-wrapper">
+      <div className="contact-container text-center animate-fade-in-up">
+        
+        <h1 className="contact-title">Contact Tamil Pasanga VTC</h1>
+        <div className="mx-auto mb-4" style={{ width: '80px', height: '4px', background: 'var(--accent-cyan)', borderRadius: '2px' }}></div>
+        <p className="contact-desc mx-auto">
           Connect with us through our active community channels. Whether you want to join our convoys or just hang out, you are always welcome!
         </p>
-      </div>
-
-      <div className="row g-4 justify-content-center">
-        <div className="col-md-6 d-flex">
-          <div className="content-card reveal w-100 d-flex flex-column text-start">
-            <h2 className="h4 fw-bold mb-3 text-white">Discord Community</h2>
-            <p className="text-muted-custom mb-4" style={{ lineHeight: '1.6' }}>
+          
+        <div className="contact-cards-grid mt-5">
+          {/* Discord Card */}
+          <a href="https://discord.com/invite/FtYBxZxTBF" target="_blank" rel="noreferrer" className="glass-panel contact-card animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <div className="contact-icon-wrapper discord mb-4 mx-auto">
+              <MessageSquare size={36} />
+            </div>
+            <h2 className="card-title">Discord Community</h2>
+            <p className="card-text">
               Join our active Discord server for real-time communication, convoy announcements, and community discussions.
             </p>
-            <a href="https://discord.com/invite/FtYBxZxTBF" target="_blank" rel="noreferrer" className="btn btn-accent btn-lg px-5 fw-bold mt-auto rounded-pill shadow-lg">
-              Join Discord Server
-            </a>
-          </div>
-        </div>
+            <div className="btn-primary mt-4 d-inline-flex">
+              Join Discord Server <ExternalLink size={18} />
+            </div>
+          </a>
 
-        <div className="col-md-6 d-flex">
-          <div className="content-card reveal delay-1 w-100 d-flex flex-column text-start">
-            <h2 className="h4 fw-bold mb-3 text-white">TruckersMP Profile</h2>
-            <p className="text-muted-custom mb-4" style={{ lineHeight: '1.6' }}>
+          {/* TruckersMP Card */}
+          <a href="https://truckersmp.com/vtc/73933-tamil_pasanga" target="_blank" rel="noreferrer" className="glass-panel contact-card animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="contact-icon-wrapper tmp mb-4 mx-auto">
+              <MapPin size={36} />
+            </div>
+            <h2 className="card-title">TruckersMP Profile</h2>
+            <p className="card-text">
               Visit our official TruckersMP VTC page to see our latest statistics, member list, and convoy schedules.
             </p>
-            <a href="https://truckersmp.com/vtc/73933-tamil_pasanga" target="_blank" rel="noreferrer" className="btn btn-accent btn-lg px-5 fw-bold mt-auto rounded-pill shadow-lg">
-              View VTC Profile
-            </a>
-          </div>
+            <div className="btn-outline mt-4 d-inline-flex">
+              View VTC Profile <ExternalLink size={18} />
+            </div>
+          </a>
         </div>
-      </div>
 
-      <div className="reveal delay-2 mt-5">
-        <div className="rounded-4 overflow-hidden border border-white border-opacity-10 shadow-2xl" style={{ height: '350px', background: 'rgba(255,255,255,0.02)' }}>
-          {/* Fallback image handler for when gallery6.png doesn't exist yet */}
-          <img 
-            src={img6} 
-            alt="Contact Banner" 
-            className="w-100 h-100 object-fit-cover" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        </div>
       </div>
     </div>
-  )
+  );
 }
-

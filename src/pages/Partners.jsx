@@ -1,137 +1,139 @@
-import React, { useEffect, useState } from 'react';
-import config from '../config';
-import { Handshake, ExternalLink } from 'lucide-react';
-import logo from '../assets/logo.svg';
+import React, { useState, useEffect } from 'react';
+import './Partners.css';
 
-export default function Partners() {
-    const [partners, setPartners] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [tmpData, setTmpData] = useState({}); // { partnerId: { logo, name } }
+const Partners = () => {
+  const [partners, setPartners] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchPartners = async () => {
-            try {
-                const res = await fetch(`${config.API_BASE_URL}/api/partners`);
-                const data = await res.json();
-                
-                if (Array.isArray(data)) {
-                    setPartners(data);
-                    
-                    // Fetch TMP data for all partners in parallel
-                    const tmpObj = {};
-                    const promises = data.map(async (p) => {
-                        if (p.vtc_link) {
-                            const match = p.vtc_link.match(/\/vtc\/(\d+)/);
-                            if (match && match[1]) {
-                                const vtcId = match[1];
-                                try {
-                                    const tmpRes = await fetch(`https://api.truckersmp.com/v2/vtc/${vtcId}`);
-                                    const tmpJson = await tmpRes.json();
-                                    if (!tmpJson.error && tmpJson.response) {
-                                        tmpObj[p.id] = tmpJson.response;
-                                    }
-                                } catch (err) {
-                                    console.error('Failed to fetch TMP data for partner', p.id);
-                                }
-                            }
-                        }
-                    });
-                    
-                    await Promise.all(promises);
-                    setTmpData(tmpObj);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const fetchPartners = async () => {
+      const CACHE_KEY = 'tpvtc_partners_cache';
+      const CACHE_EXPIRY = 30 * 60 * 1000;
+      const cached = localStorage.getItem(CACHE_KEY);
+      
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setPartners(data);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const response = await fetch(`${API_URL}/partners`);
+        const data = await response.json();
+        const validData = Array.isArray(data) ? data : [];
+        setPartners(validData);
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ data: validData, timestamp: Date.now() }));
+      } catch (error) {
+        console.error('Failed to fetch partners:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPartners();
+  }, []);
+
+  return (
+    <div className="partners-wrapper">
+      <div className="partners-hero">
+        <h4 className="overline">United We Drive</h4>
+        <h1 className="display-title">Our <span className="text-accent">Partners</span></h1>
+        <p className="hero-subtitle">
+          Collaborating with the finest Virtual Trucking Companies around the globe.
+        </p>
+      </div>
+
+      <div className="container">
+        {loading ? (
+          <div className="loading-indicator">
+            <div className="loader-bar"></div>
+            <span>Loading Partners...</span>
+          </div>
+        ) : partners.length === 0 ? (
+          <div className="text-center text-muted py-5">No partners found at this time.</div>
+        ) : (
+          <div className="partners-list">
+            {partners.map((partner, idx) => {
+              // Parse links from description
+              const lines = (partner.description || '').split('\n');
+              const cleanDesc = [];
+              const socialLinks = [];
+              const urlRegex = /(https?:\/\/[^\s]+)/;
+
+              lines.forEach(line => {
+                const match = line.match(urlRegex);
+                if (match) {
+                  const url = match[0];
+                  let label = line.replace(url, '').replace(':', '').trim();
+                  if (!label) label = 'Visit Link';
+                  socialLinks.push({ label, url });
                 } else {
-                    setPartners([]);
+                  cleanDesc.push(line);
                 }
-            } catch (e) {
-                console.error('Failed to fetch partners:', e);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchPartners();
-    }, []);
+              });
 
-    useEffect(() => {
-        const elements = Array.from(document.querySelectorAll('.reveal'));
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in');
-                    io.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        elements.forEach((el) => io.observe(el));
-        return () => io.disconnect();
-    }, [partners, loading]);
-
-    return (
-        <div className="pb-5" style={{ minHeight: '80vh', paddingTop: '100px' }}>
-            <section className="py-5 text-center reveal">
-                <div className="container py-4">
-                    <div className="d-inline-flex align-items-center justify-content-center mb-4 p-3 rounded-3 bg-white text-black shadow-lg">
-                        <Handshake size={48} fill="currentColor" />
+              return (
+                <div 
+                  key={partner.id} 
+                  className={`partner-row ${idx % 2 !== 0 ? 'row-reversed' : ''}`}
+                >
+                  <div className="partner-img-col">
+                    <div className="partner-img-wrapper">
+                      <img src={partner.image_url} alt={partner.name} className="partner-img" />
+                      <div className="partner-glow"></div>
                     </div>
-                    <h1 className="display-4 fw-bold mb-3 text-white accent-glow">Our Partners</h1>
-                    <p className="lead text-muted-custom mx-auto mb-5" style={{ maxWidth: '700px' }}>
-                        We are proud to collaborate with some of the best Virtual Trucking Companies and communities globally. Together, we make the virtual roads more exciting.
-                    </p>
-                </div>
-            </section>
-
-            <section className="py-5 bg-black bg-opacity-20 border-top border-bottom" style={{ borderColor: 'rgba(255,255,255,0.05) !important' }}>
-                <div className="container">
-                    {loading ? (
-                        <div className="text-center py-5">
-                            <div className="spinner-border text-accent mb-3" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                            <p className="text-muted-custom small">Synchronizing partner gallery...</p>
-                        </div>
-                    ) : (
-                        <div className="row g-5">
-                            {partners.map((p, idx) => {
-                                const partnerTmp = tmpData[p.id];
-                                const displayImage = p.image_url || partnerTmp?.logo || logo;
-                                
-                                return (
-                                <div key={p.id} className="col-lg-6 reveal" style={{ transitionDelay: `${idx * 100}ms` }}>
-                                    <div className="supporter-card card-with-bg p-5 h-100 border border-white border-opacity-10 transition-all hover:scale-105" 
-                                        style={{ background: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(20px)' }}>
-                                        
-                                        <div className="d-flex align-items-center justify-content-between mb-4 pb-4 border-bottom border-white border-opacity-10">
-                                            <div className="d-flex align-items-center gap-4">
-                                                <div className="bg-white p-2 rounded-3 shadow-lg d-flex align-items-center justify-content-center overflow-hidden" style={{ width: '80px', height: '80px' }}>
-                                                    <img src={displayImage} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                                </div>
-                                                <div>
-                                                    <h3 className="h4 fw-bold text-white mb-2">{p.name}</h3>
-                                                    <span className="badge bg-white text-black fw-bold px-3 py-1 shadow-sm">{p.partner_type}</span>
-                                                </div>
-                                            </div>
-                                            {p.vtc_link && (
-                                                <a href={p.vtc_link} target="_blank" rel="noreferrer" className="btn btn-outline-accent d-flex align-items-center justify-content-center transition-all hover-scale" style={{ width: '48px', height: '48px', borderRadius: '50%' }}>
-                                                    <ExternalLink size={20} />
-                                                </a>
-                                            )}
-                                        </div>
-                                        
-                                        <div className="text-muted-custom mb-0" style={{ whiteSpace: 'pre-line', lineHeight: '1.8' }}>
-                                            {p.description}
-                                        </div>
-                                    </div>
-                                </div>
-                            )})}
-                            
-                            {partners.length === 0 && (
-                                <div className="col-12 text-center py-5">
-                                    <p className="text-muted-custom opacity-50 italic lead mb-0">Our partner list is currently being updated.</p>
-                                </div>
-                            )}
-                        </div>
+                  </div>
+                  
+                  <div className="partner-info-col">
+                    <div className="partner-badge">{partner.partner_type}</div>
+                    <h2 className="partner-name">{partner.name}</h2>
+                    <p className="partner-desc">{cleanDesc.join('\n').trim()}</p>
+                    
+                    {socialLinks.length > 0 && (
+                      <div className="partner-social-links">
+                        {socialLinks.map((link, i) => (
+                          <a key={i} href={link.url} target="_blank" rel="noreferrer" className="btn-social-link">
+                            {link.label}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                              <polyline points="15 3 21 3 21 9"></polyline>
+                              <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                          </a>
+                        ))}
+                      </div>
                     )}
+                    
+                    {partner.vtc_link && partner.vtc_link.trim() !== '' && partner.vtc_link !== '#' && (
+                      <a 
+                        href={partner.vtc_link} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="btn-visit-partner"
+                      >
+                        <span>Visit VTC Page</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                          <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                      </a>
+                    )}
+                  </div>
                 </div>
-            </section>
-        </div>
-    );
-}
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Partners;
