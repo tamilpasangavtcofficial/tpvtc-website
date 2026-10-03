@@ -494,8 +494,8 @@
 /* Old Style Grid Layout from Screenshot */
 .parking-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
 }
 
 .parking-zone-card {
@@ -883,10 +883,15 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .event-info-grid { grid-template-columns: 1fr 1fr; }
+  .event-info-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
-  .event-title { font-size: 2rem; }
-  .event-banner-overlay { padding: 2rem; }
+  .event-title { 
+    font-size: 1.6rem !important; 
+    word-break: break-word;
+  }
+  .event-banner-overlay { padding: 1.5rem; }
+  .booking-engine-section { padding: 1.5rem; }
+  .info-panel { padding: 1.5rem; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 }
 
 /* Image Preview Modal */

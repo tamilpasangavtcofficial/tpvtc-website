@@ -20,7 +20,7 @@ const MedalBadge = ({ rank }) => {
 
   return (
     <div className="medal-wrapper" style={{ position: 'relative', width: rank === 1 ? '140px' : '110px', height: rank === 1 ? '160px' : '130px' }}>
-      <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
         <path d="M35 60 L25 95 L40 85 L50 95 L65 105 L75 95 L65 60" fill={bgColor} opacity="0.8" />
         <path d="M35 60 L20 100 L40 85 L35 60" fill={darkColor} />
         <path d="M65 60 L80 100 L60 85 L65 60" fill={darkColor} />

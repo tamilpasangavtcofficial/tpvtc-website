@@ -359,9 +359,14 @@
 }
 
 .podium-avatar-wrap {
+  position: relative;
   margin-bottom: -50px;
   z-index: 5;
   filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .podium-item--1 .podium-avatar-wrap {
@@ -741,7 +746,7 @@
 @media (max-width: 768px) {
   .hero-section {
     flex-direction: column;
-    padding-top: 60px;
+    padding-top: 120px;
     padding-bottom: 40px;
   }
   .hero-content {
@@ -757,7 +762,7 @@
     border-radius: 20px;
   }
   .tracking-card { margin-right: 0; width: 90%; }
-  .hero-title { font-size: 3.5rem; }
+  .hero-title { font-size: 2.2rem; line-height: 1.1; word-wrap: break-word; hyphens: auto; }
   .stats-grid, .features-grid, .news-grid { grid-template-columns: 1fr; }
   .leaderboard-table th, .leaderboard-table td { padding: 1rem; }
   .leaderboard-table .text-right { display: none; } 
@@ -765,4 +770,31 @@
   .cta-title { font-size: 2.5rem; }
   .cta-actions { flex-direction: column; }
   .mission-features-grid { grid-template-columns: 1fr; }
+  .podium-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 4rem;
+  }
+  .podium-item {
+    width: 100%;
+    max-width: 100%;
+    flex: none;
+    margin-bottom: 4rem;
+  }
+  .podium-avatar-wrap {
+    margin-bottom: -20px;
+  }
+  .podium-item--1 .podium-avatar-wrap {
+    margin-bottom: -20px;
+  }
+  .podium-rank-box {
+    padding-top: 4rem;
+    margin-top: 0;
+  }
+  .podium-item--1 .podium-rank-box {
+    padding-top: 4rem;
+  }
+  .podium-item--1 { order: 1; }
+  .podium-item--2 { order: 2; }
+  .podium-item--3 { order: 3; }
 }
