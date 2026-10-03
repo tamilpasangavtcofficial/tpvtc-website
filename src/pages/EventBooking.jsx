@@ -107,28 +107,35 @@ const EventBooking = () => {
           try {
             // Find the selected slot group to display its name
             let slotGroupName = "Unknown Slot";
-            if (bookingGroup && bookingGroup.slots) {
-              const slot = bookingGroup.slots.find(s => String(s.id) === String(formData.selected_slot_id));
-              if (slot) slotGroupName = `${bookingGroup.name} - Slot ${slot.slot_number}`;
+            let slotImageUrl = null;
+            if (bookingGroup && Array.isArray(bookingGroup)) {
+              const slot = bookingGroup.find(s => String(s.id) === String(formData.selected_slot_id));
+              if (slot) {
+                const zoneName = slot.EventSlotImage?.slot_name || "Unknown Zone";
+                slotGroupName = `Slot #${slot.slot_no} - ${zoneName}`;
+                slotImageUrl = slot.EventSlotImage?.slot_url;
+              }
             }
 
             const discordPayload = {
-              username: "Slot System Bot",
-              avatar_url: "https://i.imgur.com/8Qj9b1F.png",
+              username: "TAMIL PASANGA OFFICIAL",
+              ...(import.meta.env.VITE_DISCORD_AVATAR_URL ? { avatar_url: import.meta.env.VITE_DISCORD_AVATAR_URL } : {}),
+              content: import.meta.env.VITE_DISCORD_ROLE_PING || "<@&1274604626280448030>",
               embeds: [{
-                title: "🚛 New Convoy Slot Request",
-                color: 3447003, // blue
+                title: "🚛 New Slot Request Received!",
+                color: 3092790, // Dark grey/blue color similar to screenshot
                 fields: [
                   { name: "Event Name", value: activeEvent.name || "Unknown Event", inline: false },
-                  { name: "Requested Slot", value: slotGroupName, inline: false },
+                  { name: "Event ID", value: String(activeEvent.id), inline: true },
+                  { name: "Requested Slot", value: slotGroupName, inline: true },
                   { name: "VTC Name", value: formData.vtc_name, inline: true },
                   { name: "Member Count", value: String(formData.vtc_member_count), inline: true },
-                  { name: "Applicant Discord", value: formData.discord_username, inline: true },
+                  { name: "Discord Handle", value: formData.discord_username, inline: true },
                   { name: "VTC Role", value: formData.vtc_role, inline: true },
-                  { name: "VTC Link", value: formData.vtc_link || "None", inline: false }
+                  { name: "VTC / TMP Link", value: formData.vtc_link || "None", inline: false }
                 ],
-                footer: { text: "Tamil Pasanga VTC Slot Manager" },
-                timestamp: new Date().toISOString()
+                image: slotImageUrl ? { url: slotImageUrl } : undefined,
+                footer: { text: `Request ID: ${Math.floor(Math.random() * 1000)} • ${new Date().toLocaleString('en-GB')}` }
               }]
             };
 
