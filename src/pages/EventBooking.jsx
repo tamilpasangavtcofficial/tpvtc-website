@@ -119,7 +119,7 @@ const EventBooking = () => {
 
             const discordPayload = {
               username: "TAMIL PASANGA OFFICIAL",
-              avatar_url: import.meta.env.VITE_DISCORD_AVATAR_URL || "https://i.imgur.com/8Qj9b1F.png", 
+              ...(import.meta.env.VITE_DISCORD_AVATAR_URL ? { avatar_url: import.meta.env.VITE_DISCORD_AVATAR_URL } : {}),
               content: import.meta.env.VITE_DISCORD_ROLE_PING || "<@&1274604626280448030>",
               embeds: [{
                 title: "🚛 New Slot Request Received!",
