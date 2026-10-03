@@ -113,14 +113,14 @@ const EventBooking = () => {
               if (slot) {
                 const zoneName = slot.EventSlotImage?.slot_name || "Unknown Zone";
                 slotGroupName = `Slot #${slot.slot_no} - ${zoneName}`;
-                slotImageUrl = slot.EventSlotImage?.image_url;
+                slotImageUrl = slot.EventSlotImage?.slot_url;
               }
             }
 
             const discordPayload = {
               username: "TAMIL PASANGA OFFICIAL",
-              avatar_url: "https://i.imgur.com/8Qj9b1F.png", // Assuming this is the server avatar
-              content: "@Events Team",
+              avatar_url: import.meta.env.VITE_DISCORD_AVATAR_URL || "https://i.imgur.com/8Qj9b1F.png", 
+              content: import.meta.env.VITE_DISCORD_ROLE_PING || "<@&1274604626280448030>",
               embeds: [{
                 title: "🚛 New Slot Request Received!",
                 color: 3092790, // Dark grey/blue color similar to screenshot
