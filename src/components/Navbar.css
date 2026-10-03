@@ -105,6 +105,16 @@
 .mobile-menu-btn {
   display: none;
   color: var(--text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 1024px) {
@@ -114,8 +124,9 @@
     top: 80px;
     left: 0;
     right: 0;
+    margin-left: 0;
     transform: none;
-    background: var(--bg-surface-elevated);
+    background: #0f172a;
     flex-direction: column;
     padding: 2rem;
     gap: 1.5rem;
